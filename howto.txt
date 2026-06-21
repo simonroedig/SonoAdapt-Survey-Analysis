@@ -4,7 +4,7 @@ Activate Venv:
 .venv\Scripts\Activate.ps1
 
 Install:
-pip install streamlit pandas plotly
+pip install streamlit pandas plotly openpyxl
 
 Run:
 streamlit run app.py
