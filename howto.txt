@@ -3,5 +3,8 @@ AI Kontext: https://aistudio.google.com/prompts/1J7hrvhTl1glA5W-igegeblDMDUmFrwE
 Activate Venv: 
 .venv\Scripts\Activate.ps1
 
+Install:
+pip install streamlit pandas plotly
+
 Run:
 streamlit run app.py
