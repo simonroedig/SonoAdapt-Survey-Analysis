@@ -3,12 +3,12 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from collections import Counter
+import re
 
 # --- Page Configuration ---
 st.set_page_config(page_title="Smart Glasses Audio Notifs", page_icon="🕶️", layout="wide")
 
 # --- Define Full Likert Scales ---
-# We define these explicitly so that charts always display the FULL axis, even if count is 0
 SCALE_AGREE = [
     'Strongly disagree', 'Disagree', 'Somewhat disagree', 
     'Neither agree nor disagree', 'Somewhat agree', 'Agree', 'Strongly agree'
@@ -63,25 +63,35 @@ def load_data(filepath):
     except Exception as e:
         return None, str(e)
 
+def get_counts_with_ids(df, col, category_order=None):
+    """Aggregates counts and maps ResponseIds for chart tooltips."""
+    has_id = 'ResponseId' in df.columns
+    counts = df[col].value_counts().reset_index()
+    counts.columns = [col, 'Count']
+    
+    if has_id:
+        grouped = df.dropna(subset=[col]).groupby(col)['ResponseId'].apply(lambda x: ', '.join(x.astype(str))).reset_index()
+        grouped.columns = [col, 'Participants']
+        counts = pd.merge(counts, grouped, on=col, how='left')
+    else:
+        counts['Participants'] = ""
+        
+    if category_order:
+        cat_df = pd.DataFrame({col: category_order})
+        counts = pd.merge(cat_df, counts, on=col, how='left').fillna({'Count': 0, 'Participants': ''})
+    return counts
+
 def plot_bar(df, col, title, orientation='v', category_order=None):
     if col not in df.columns: return
     
-    counts = df[col].value_counts()
+    counts = get_counts_with_ids(df, col, category_order)
     
-    # Force inclusion of all categories if a standard scale is provided
-    if category_order:
-        counts = counts.reindex(category_order, fill_value=0)
-        
-    counts = counts.reset_index()
-    counts.columns = [col, 'Count']
-    
-    # Draw chart
     fig = px.bar(counts, x=col if orientation=='v' else 'Count', 
                  y='Count' if orientation=='v' else col, 
                  title=title, text='Count', color=col,
+                 hover_data=['Participants'],
                  color_discrete_sequence=px.colors.qualitative.Pastel)
     
-    # Enforce axis order in plotly
     if category_order:
         if orientation == 'v':
             fig.update_xaxes(categoryorder='array', categoryarray=category_order)
@@ -93,11 +103,29 @@ def plot_bar(df, col, title, orientation='v', category_order=None):
 
 def plot_multiple_choice(df, col, title):
     if col not in df.columns: return
-    responses = df[col].dropna().astype(str).str.split(',')
-    flat_list = [item.strip() for sublist in responses for item in sublist if item.strip()]
-    counts = pd.DataFrame(Counter(flat_list).most_common(), columns=['Response', 'Count'])
+    
+    flat_records = []
+    for _, row in df.dropna(subset=[col]).iterrows():
+        items = re.split(r',(?!\s)', str(row[col]))
+        for item in items:
+            clean_item = item.strip()
+            if clean_item:
+                flat_records.append({
+                    'Response': clean_item, 
+                    'Participant': str(row['ResponseId']) if 'ResponseId' in df.columns else ''
+                })
+                
+    flat_df = pd.DataFrame(flat_records)
+    if flat_df.empty: return
+    
+    counts = flat_df.groupby('Response').agg(
+        Count=('Participant', 'size'),
+        Participants=('Participant', lambda x: ', '.join(x))
+    ).reset_index().sort_values('Count', ascending=True)
+
     fig = px.bar(counts, x='Count', y='Response', orientation='h', title=title, text='Count',
-                 color='Response', color_discrete_sequence=px.colors.qualitative.Set2)
+                 color='Response', hover_data=['Participants'], 
+                 color_discrete_sequence=px.colors.qualitative.Set2)
     fig.update_layout(showlegend=False, yaxis={'categoryorder':'total ascending'})
     st.plotly_chart(fig, use_container_width=True)
 
@@ -105,22 +133,19 @@ def plot_scenario_comparison(df, prefix, metric, title, category_order=None):
     col1, col2, col3 = f"{prefix}. {metric}_1", f"{prefix}. {metric}_2", f"{prefix}. {metric}_3"
     if not any(c in df.columns for c in [col1, col2, col3]): return
 
-    counts_dict = {}
+    counts_dict = []
     versions = {'🔔 V1 (Sound)': col1, '🗣️ V2 (Sender)': col2, '🗣️🗣️ V3 (Full)': col3}
     
     for name, col in versions.items():
         if col in df.columns:
-            s = df[col].value_counts()
-            # Enforce 0 values for empty likert options
-            if category_order:
-                s = s.reindex(category_order, fill_value=0)
-            counts_dict[name] = s
+            merged = get_counts_with_ids(df, col, category_order)
+            merged['Version'] = name
+            merged.rename(columns={col: 'Rating'}, inplace=True)
+            counts_dict.append(merged)
             
-    counts_df = pd.DataFrame(counts_dict).fillna(0).reset_index()
-    counts_df = counts_df.melt(id_vars='index', var_name='Version', value_name='Count')
-    counts_df.rename(columns={'index': 'Rating'}, inplace=True)
-    
+    counts_df = pd.concat(counts_dict)
     fig = px.bar(counts_df, x='Rating', y='Count', color='Version', barmode='group', title=title, 
+                 hover_data=['Participants'],
                  color_discrete_sequence=['#F4D03F', '#AF7AC5', '#5B2C6F'])
                  
     if category_order:
@@ -133,25 +158,45 @@ def plot_matrix(df, cols, labels, title, barmode='group', category_order=None):
     melted = []
     for col, label in zip(cols, labels):
         if col in df.columns:
-            counts = df[col].value_counts()
-            if category_order:
-                counts = counts.reindex(category_order, fill_value=0)
-            counts = counts.reset_index()
-            counts.columns = ['Preference', 'Count']
-            counts['Message Type'] = label
-            melted.append(counts)
+            merged = get_counts_with_ids(df, col, category_order)
+            merged.rename(columns={col: 'Preference'}, inplace=True)
+            merged['Message Type'] = label
+            melted.append(merged)
     if not melted: return
     
     plot_df = pd.concat(melted)
     fig = px.bar(plot_df, x='Message Type', y='Count', color='Preference', 
-                 barmode=barmode, title=title, 
+                 barmode=barmode, title=title, hover_data=['Participants'],
                  color_discrete_sequence=px.colors.qualitative.Safe,
                  category_orders={'Preference': category_order} if category_order else None)
     st.plotly_chart(fig, use_container_width=True)
 
+def display_text_table(df, text_col, title, extra_cols=None):
+    """Helper to display open text cleanly with Participant IDs and related context."""
+    if text_col not in df.columns: return
+    cols_to_get = ['ResponseId'] + (extra_cols if extra_cols else []) + [text_col]
+    available_cols = [c for c in cols_to_get if c in df.columns]
+    
+    temp_df = df[available_cols].dropna(subset=[text_col])
+    temp_df = temp_df[temp_df[text_col].astype(str).str.strip() != ""]
+    if temp_df.empty: return
+    
+    # Prettify column headers
+    rename_dict = {'ResponseId': 'Participant ID'}
+    if extra_cols:
+        for c in extra_cols: rename_dict[c] = c.split('.')[-1].strip()
+    
+    temp_df = temp_df.rename(columns=rename_dict)
+    
+    with st.expander(f"📖 {title} ({len(temp_df)} responses)"):
+        # Sort by the contextual column if we have one
+        if extra_cols and extra_cols[0] in rename_dict:
+            temp_df = temp_df.sort_values(by=rename_dict[extra_cols[0]])
+        st.dataframe(temp_df, use_container_width=True, hide_index=True)
+
 # --- Main App ---
 st.title("🕶️ Auditory Notifications on Smart Glasses - Dashboard")
-st.markdown("Interactive analysis of the Qualtrics user study results.")
+st.markdown("Interactive analysis of the Qualtrics user study results. **Hover over bars to see Participant IDs.**")
 
 df, descriptions = load_data("data.xlsx")
 
@@ -195,11 +240,11 @@ with tabs[0]:
     c1, c2, c3 = st.columns(3)
     with c1:
         if 'Age' in df.columns:
-            fig_age = px.histogram(df, x='Age', title="Age Distribution", nbins=15, color_discrete_sequence=['#5DADE2'])
+            fig_age = px.histogram(df, x='Age', title="Age Distribution", nbins=15, hover_data=['ResponseId'], color_discrete_sequence=['#5DADE2'])
             st.plotly_chart(fig_age, use_container_width=True)
     with c2:
         if 'Gender' in df.columns:
-            fig_gender = px.pie(df, names='Gender', title="Gender Breakdown", hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
+            fig_gender = px.pie(df, names='Gender', title="Gender Breakdown", hover_data=['ResponseId'], hole=0.4, color_discrete_sequence=px.colors.qualitative.Pastel)
             st.plotly_chart(fig_gender, use_container_width=True)
     with c3:
         plot_bar(df, 'English Skill_1', "English Proficiency", category_order=SCALE_ENGLISH)
@@ -209,6 +254,8 @@ with tabs[0]:
         plot_bar(df, 'Culture', "Country of Origin", orientation='h')
     with c5:
         plot_bar(df, 'Musical Background', "Musical Background", orientation='h')
+        
+    display_text_table(df, 'Impairment_2_TEXT', "Hearing Impairment Details")
 
 # ==========================================
 # TAB 2: Baseline & General Preferences
@@ -221,6 +268,8 @@ with tabs[1]:
         plot_bar(df, 'My Notif Settings', "Standard Smartphone Notification Setting", orientation='h')
     with c2:
         plot_multiple_choice(df, 'My Notif SettingsWhy', "Reasons for Chosen Setting")
+    
+    display_text_table(df, 'My Notif SettingsWhy_6_TEXT', "Other Specific Settings (Text)")
 
     c3, c4 = st.columns(2)
     with c3:
@@ -231,6 +280,7 @@ with tabs[1]:
     st.divider()
     st.subheader("Auditory Preferences Independent of Context")
     plot_multiple_choice(df, 'Which Notif Auditory', "Apps Desired for Auditory Notifications via Glasses")
+    display_text_table(df, 'Which Notif Auditory_9_TEXT', "Other Specific Apps (Text)")
     
     c5, c6 = st.columns(2)
     with c5:
@@ -240,11 +290,11 @@ with tabs[1]:
         
     st.divider()
     st.subheader("💬 Contextual Reasoning: Baseline Preference")
-    if all(c in df.columns for c in ['ResponseId', 'Preference', 'Preference Text']):
-        pref_df = df[['ResponseId', 'Preference', 'Preference Text']].dropna(subset=['Preference Text'])
-        pref_df = pref_df[pref_df['Preference Text'].astype(str).str.strip() != ""]
-        if not pref_df.empty:
-            st.dataframe(pref_df.sort_values(by='Preference'), use_container_width=True, hide_index=True)
+    c_pref1, c_pref2 = st.columns(2)
+    with c_pref1:
+        display_text_table(df, 'Preference Text', "Why prefer chosen version?", extra_cols=['Preference'])
+    with c_pref2:
+        display_text_table(df, 'Scenes Inappropriate', "Inappropriate Scenarios for preferred version", extra_cols=['Preference'])
 
     st.divider()
     st.subheader("Attitudes Towards Speech Output")
@@ -255,10 +305,12 @@ with tabs[1]:
         plot_bar(df, 'Speech Opinion_2', "Acceptable to read out loud without explicit request?", category_order=SCALE_AGREE)
         
     plot_multiple_choice(df, 'Speech Opinion 2', "Factors influencing attitude towards speech output")
+    display_text_table(df, 'Speech Opinion 2_10_TEXT', "Other factors influencing speech attitude (Text)")
     
     c9, c10 = st.columns(2)
     with c9:
         plot_multiple_choice(df, 'Maximum Length', "Maximum Acceptable Length for Spoken Notifications")
+        display_text_table(df, 'Maximum Length_7_TEXT', "Other Maximum Length specs (Text)")
     with c10:
         plot_bar(df, 'Summary Acceptance_1', "Acceptance of AI Summarization for LONG messages", category_order=SCALE_AGREE)
 
@@ -283,7 +335,6 @@ with tabs[2]:
         with scenario_tabs[idx]:
             st.subheader(f"Scenario {prefix}: {name}")
             
-            # Likert Comparisons (V1 vs V2 vs V3) - Now passing explicit category scales
             c1, c2 = st.columns(2)
             with c1:
                 plot_scenario_comparison(df, prefix, 'Appropriateness', "Appropriateness", category_order=SCALE_APPROPRIATE)
@@ -309,40 +360,17 @@ with tabs[2]:
             st.divider()
             st.subheader("💬 Participant Reasoning (Correlated with their Choices)")
             
-            # Table 1: Overall Preference Reason
             col_overall = f"{prefix}. Overall"
             col_overall_txt = f"{prefix}. Why Text"
+            display_text_table(df, col_overall_txt, "Reasons for Overall Preference", extra_cols=[col_overall])
             
-            if col_overall in df.columns and col_overall_txt in df.columns:
-                reason_df = df[['ResponseId', col_overall, col_overall_txt]].dropna(subset=[col_overall_txt])
-                reason_df = reason_df[reason_df[col_overall_txt].astype(str).str.strip() != ""]
-                reason_df.columns = ['Participant ID', 'Chosen Version', 'Explanation']
-                
-                if not reason_df.empty:
-                    with st.expander(f"Reasons for Overall Preference ({len(reason_df)} responses)"):
-                        st.dataframe(reason_df.sort_values(by='Chosen Version'), use_container_width=True, hide_index=True)
-            
-            # Table 2: Timing & Delay Preference Reason
+            display_text_table(df, f"{prefix}. Overall Why_6_TEXT", "Other factors influencing choice (Text)", extra_cols=[col_overall])
+
             col_timing = f"{prefix}. Timing"
             col_timing_fol = f"{prefix}. Timing Follow"
             col_timing_txt = f"{prefix}. Why Timing Text"
-            
-            cols_to_get = [c for c in ['ResponseId', col_timing, col_timing_fol, col_timing_txt] if c in df.columns]
-            if col_timing_txt in df.columns:
-                timing_df = df[cols_to_get].dropna(subset=[col_timing_txt])
-                timing_df = timing_df[timing_df[col_timing_txt].astype(str).str.strip() != ""]
-                
-                rename_dict = {
-                    'ResponseId': 'Participant ID',
-                    col_timing: 'Chosen Timing',
-                    col_timing_fol: 'Chosen Delayed Version',
-                    col_timing_txt: 'Explanation for Timing/Delay'
-                }
-                timing_df = timing_df.rename(columns=rename_dict)
-                
-                if not timing_df.empty:
-                    with st.expander(f"Reasons for Delivery Timing ({len(timing_df)} responses)"):
-                        st.dataframe(timing_df.sort_values(by='Chosen Timing'), use_container_width=True, hide_index=True)
+            display_text_table(df, col_timing_txt, "Reasons for Delivery Timing & Delayed Version", extra_cols=[col_timing, col_timing_fol])
+
 
 # ==========================================
 # TAB 4: Final Matrices & System Opinion
@@ -381,16 +409,5 @@ with tabs[4]:
     st.header("💬 General & Additional Open Text Feedback")
     st.info("These responses represent overall feedback and general concerns not tied to a specific scenario.")
     
-    if ' System Opinion Why' in df.columns: 
-        concerns_df = df[['ResponseId', ' System Opinion Why']].dropna()
-        concerns_df = concerns_df[concerns_df[' System Opinion Why'].astype(str).str.strip() != ""]
-        if not concerns_df.empty:
-            with st.expander(f"⚠️ General AI System Concerns ({len(concerns_df)} responses)"):
-                st.dataframe(concerns_df, use_container_width=True, hide_index=True)
-
-    if 'Final' in df.columns:
-        final_df = df[['ResponseId', 'Final']].dropna()
-        final_df = final_df[final_df['Final'].astype(str).str.strip() != ""]
-        if not final_df.empty:
-            with st.expander(f"📝 Final Additional Comments & Thoughts ({len(final_df)} responses)"):
-                st.dataframe(final_df, use_container_width=True, hide_index=True)
+    display_text_table(df, ' System Opinion Why', "General AI System Concerns")
+    display_text_table(df, 'Final', "Final Additional Comments & Thoughts")
