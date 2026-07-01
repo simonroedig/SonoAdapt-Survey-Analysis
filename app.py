@@ -240,6 +240,15 @@ if 'Headphones' in df.columns:
     if req_headphones:
         df = df[df['Headphones'].astype(str).str.contains("Yes", na=False)]
 
+# NEW: Attention Check Filtering
+if 'Attention Check 1' in df.columns and 'Attention Check 2' in df.columns:
+    pass_attention = st.sidebar.checkbox("Only users who passed Attention Checks", value=True)
+    if pass_attention:
+        df = df[
+            (df['Attention Check 1'].astype(str).str.contains('Somewhat disagree', na=False)) & 
+            (df['Attention Check 2'].astype(str).str.contains('Agree', na=False))
+        ]
+
 if 'ResponseId' in df.columns:
     all_ids = df['ResponseId'].dropna().tolist()
     selected_ids = st.sidebar.multiselect("Select Participants (ResponseId)", all_ids, default=all_ids)
@@ -254,7 +263,8 @@ tabs = st.tabs([
     "👥 Demographics & Background", 
     "🧠 Familiarization", 
     "🎬 Scenarios (A-I)", 
-    "🧮 Final Matrices & Feedback"
+    "🧮 Final Matrices & Feedback",
+    "⏱️ Timing Analysis"  # NEW TAB
 ])
 
 # ==========================================
@@ -354,15 +364,15 @@ with tabs[3]:
     st.header("Contextual Scenarios")
     
     scenarios = {
-        'A': 'Home Alone (Computer Work)',
-        'B': 'Team Meeting (Office)',
-        'C': 'Home Music (Relaxing)',
-        'D': 'Coffee Bar (Conversation)',
-        'E': 'Cycle City (Traffic)',
+        'A': 'Home Alone Computer',
+        'B': 'Team Meeting',
+        'C': 'Home Music',
+        'D': 'Tent',
+        'E': 'Cycle City',
         'F': 'Grocery Shopping',
-        'G': 'Scenario G',
-        'H': 'Scenario H',
-        'I': 'Scenario I'
+        'G': 'Cooking Dinner',
+        'H': 'Study Coffee Shop',
+        'I': 'Quiet Friend Over'
     }
     
     active_scenarios = {k: v for k, v in scenarios.items() if any(col.startswith(f"{k}.") for col in df.columns)}
@@ -408,6 +418,9 @@ with tabs[3]:
                 col_timing_fol = f"{prefix}. Timing Follow"
                 col_timing_txt = f"{prefix}. Why Timing Text"
                 display_text_table(df, col_timing_txt, "Reasons for Delivery Timing & Delayed Version", extra_cols=[col_timing, col_timing_fol])
+                
+                # NEW: Capture "Other" text inputs on the timing question
+                display_text_table(df, f"{prefix}. Timing_5_TEXT", "Other specified timing (Text)", extra_cols=[col_timing])
     else:
         st.warning("No scenario data (A-I) found in the dataset.")
 
@@ -435,3 +448,60 @@ with tabs[4]:
     st.info("These responses represent overall feedback and general concerns not tied to a specific scenario.")
     
     display_text_table(df, 'Final', "Final Additional Comments & Thoughts")
+
+
+# ==========================================
+# TAB 6: Timing Analysis (NEW)
+# ==========================================
+with tabs[5]:
+    st.header("⏱️ Survey Timing & Duration Analysis")
+    st.markdown("Use this tab to identify participants who may have sped through the survey or skipped listening to the audio clips.")
+
+    # 1. Total Duration
+    duration_col = next((c for c in df.columns if 'Duration' in str(c)), None)
+    if duration_col:
+        st.subheader("Total Survey Duration")
+        df['__temp_duration'] = pd.to_numeric(df[duration_col], errors='coerce')
+        
+        # Plot Histogram of total duration
+        fig_dur = px.histogram(df, x='__temp_duration', nbins=20, 
+                               title="Distribution of Total Duration (Seconds)",
+                               labels={'__temp_duration': 'Seconds'},
+                               hover_data=['ResponseId'],
+                               color_discrete_sequence=['#E74C3C'])
+        st.plotly_chart(fig_dur, use_container_width=True)
+        
+        # Show min/max/avg
+        avg_dur = df['__temp_duration'].mean()
+        med_dur = df['__temp_duration'].median()
+        st.write(f"**Average Duration:** {avg_dur/60:.1f} minutes | **Median Duration:** {med_dur/60:.1f} minutes")
+
+    st.divider()
+
+    # 2. Time Spent Per Block (Page Submit metrics)
+    submit_cols = [c for c in df.columns if 'Page Submit' in str(c)]
+    
+    if submit_cols:
+        st.subheader("Time Spent per Survey Block (Seconds)")
+        
+        # Reshape data to plot it easily
+        timing_df = df[['ResponseId'] + submit_cols].melt(id_vars='ResponseId', var_name='Block', value_name='Seconds')
+        timing_df['Seconds'] = pd.to_numeric(timing_df['Seconds'], errors='coerce')
+        timing_df = timing_df.dropna(subset=['Seconds'])
+        
+        # Clean up block names for the graph
+        timing_df['Block'] = timing_df['Block'].str.replace('_Page Submit', '', regex=False).str.replace(' Timing', '', regex=False)
+        
+        # Boxplot to show distribution and outliers
+        fig_time = px.box(timing_df, x='Block', y='Seconds', points="all", 
+                          hover_data=['ResponseId'], 
+                          title="Distribution of Time Spent by Block",
+                          color_discrete_sequence=['#3498DB'])
+        st.plotly_chart(fig_time, use_container_width=True)
+        
+        # Data summary table
+        st.markdown("**Summary Statistics by Block:**")
+        summary_time = timing_df.groupby('Block')['Seconds'].agg(['mean', 'median', 'min', 'max']).round(2).reset_index()
+        st.dataframe(summary_time, use_container_width=True)
+    else:
+        st.info("No detailed 'Page Submit' timing columns found in the dataset. Ensure you exported the timing data variables from Qualtrics.")
