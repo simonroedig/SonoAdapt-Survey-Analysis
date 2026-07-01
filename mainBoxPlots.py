@@ -158,7 +158,7 @@ def create_boxplots(long_df):
                 order=ORDER_SOCIAL, color="skyblue"
             )
             plt.title(f"{t_name}: Social Acceptability by Social Setting (Asocial)", fontsize=14)
-            plt.xlabel("Social Setting (Asocial)", fontsize=12)
+            plt.xlabel(r"$A_{SOCIAL}$", fontsize=12)
             plt.ylabel("Social Acceptability", fontsize=12)
             
             # Custom Y-Axis Labels
@@ -193,7 +193,7 @@ def create_boxplots(long_df):
                 order=ORDER_TASK, color="salmon"
             )
             plt.title(f"{t_name}: Disruption by Task Load (e-Task)", fontsize=14)
-            plt.xlabel("Task Load (e-Task)", fontsize=12)
+            plt.xlabel(r"$E_{TASK}$", fontsize=12)
             plt.ylabel("Disruption", fontsize=12)
             
             # Custom Y-Axis Labels
@@ -228,7 +228,7 @@ def create_boxplots(long_df):
                 order=ORDER_SOUND, color="lightgreen"
             )
             plt.title(f"{t_name}: Detectability by Sound Masking (CM)", fontsize=14)
-            plt.xlabel("Soundscape (CM)", fontsize=12)
+            plt.xlabel(r"$C_M$", fontsize=12)
             plt.ylabel("Detectability", fontsize=12)
             
             # Custom Y-Axis Labels
