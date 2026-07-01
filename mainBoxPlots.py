@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
+# Configure fonts to properly render emojis (falling back to Segoe UI Emoji on Windows)
+plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu Sans']
 # ==========================================
 # CONFIGURATION & MAPPINGS
 # ==========================================
@@ -31,6 +33,18 @@ SCENARIO_MAPPING = {
 ORDER_SOCIAL = ['Alone', 'Interactive', 'Passive']
 ORDER_TASK   = ['Low', 'High mental', 'High physical']
 ORDER_SOUND  = ['Quiet', 'Music', 'Speech']
+
+# Custom Palettes for distinct box plot colors
+PALETTE_SOCIAL = {'Alone': '#6baed6', 'Interactive': '#3182bd', 'Passive': '#08519c'}
+PALETTE_TASK = {'Low': '#fd8d3c', 'High mental': '#e6550d', 'High physical': '#a63603'}
+PALETTE_SOUND = {'Quiet': '#74c476', 'Music': '#31a354', 'Speech': '#006d2c'}
+
+# Emojis for titles
+TITLE_EMOJIS = {
+    'Earcon': 'Earcon (\U0001f514)',
+    'Short Speech': 'Short Speech (\U0001f5e3)',
+    'Rich Speech': 'Rich Speech (\U0001f5e3 \U0001f5e3)'
+}
 
 # 3. Likert text to numeric conversion mapping. 
 LIKERT_MAP = {
@@ -146,6 +160,8 @@ def create_boxplots(long_df):
         if type_df.empty:
             print(f"Warning: No overall data found for {t_name}. Skipping its plots.")
             continue
+            
+        t_title = TITLE_EMOJIS.get(t_name, t_name)
 
         # ==========================================================
         # Plot 1: Social Setting (Asocial) vs Social Acceptability
@@ -155,9 +171,9 @@ def create_boxplots(long_df):
             plt.figure(figsize=(9, 6)) # Made slightly wider to accommodate labels
             sns.boxplot(
                 data=plot1_df, x='Asocial', y='Social Acceptability', 
-                order=ORDER_SOCIAL, color="skyblue"
+                order=ORDER_SOCIAL, palette=PALETTE_SOCIAL
             )
-            plt.title(f"{t_name}: Social Acceptability by Social Setting (Asocial)", fontsize=14)
+            plt.title(f"{t_title}: Social Acceptability by Social Setting (Asocial)", fontsize=14, fontname='Segoe UI Emoji')
             plt.xlabel(r"$A_{SOCIAL}$", fontsize=12)
             plt.ylabel("Social Acceptability", fontsize=12)
             
@@ -190,9 +206,9 @@ def create_boxplots(long_df):
             plt.figure(figsize=(9, 6))
             sns.boxplot(
                 data=plot2_df, x='e-Task', y='Disruption', 
-                order=ORDER_TASK, color="salmon"
+                order=ORDER_TASK, palette=PALETTE_TASK
             )
-            plt.title(f"{t_name}: Disruption by Task Load (e-Task)", fontsize=14)
+            plt.title(f"{t_title}: Disruption by Task Load (e-Task)", fontsize=14, fontname='Segoe UI Emoji')
             plt.xlabel(r"$E_{TASK}$", fontsize=12)
             plt.ylabel("Disruption", fontsize=12)
             
@@ -225,9 +241,9 @@ def create_boxplots(long_df):
             plt.figure(figsize=(9, 6))
             sns.boxplot(
                 data=plot3_df, x='CM', y='Detectability', 
-                order=ORDER_SOUND, color="lightgreen"
+                order=ORDER_SOUND, palette=PALETTE_SOUND
             )
-            plt.title(f"{t_name}: Detectability by Sound Masking (CM)", fontsize=14)
+            plt.title(f"{t_title}: Detectability by Sound Masking (CM)", fontsize=14, fontname='Segoe UI Emoji')
             plt.xlabel(r"$C_M$", fontsize=12)
             plt.ylabel("Detectability", fontsize=12)
             
