@@ -209,14 +209,23 @@ if date_col:
     min_date = df['__temp_date'].min()
     max_date = df['__temp_date'].max()
     
+    import datetime
     if pd.notna(min_date) and pd.notna(max_date):
         min_d = min_date.date()
         max_d = max_date.date()
         
         st.sidebar.markdown("### 📅 Timeframe Filter")
+        st.sidebar.caption("Note: The earliest recording with the full release is June 30, 2026. Earlier dates may contain initial test recordings.")
+        
+        default_start = datetime.date(2026, 6, 30)
+        if default_start < min_d:
+            default_start = min_d
+        elif default_start > max_d:
+            default_start = max_d
+
         date_selection = st.sidebar.date_input(
             "Select range to exclude test data:",
-            value=(min_d, max_d),
+            value=(default_start, max_d),
             min_value=min_d,
             max_value=max_d
         )
@@ -230,15 +239,23 @@ if date_col:
 
 st.sidebar.markdown("---")
 
-if 'Finished' in df.columns:
-    only_finished = st.sidebar.checkbox("Only include 'Finished' responses", value=True)
-    if only_finished:
-        df = df[df['Finished'].astype(str) == 'True']
+outliers_file = "listOfManuallyIdentifiedOutliers.txt"
+outliers = []
+try:
+    with open(outliers_file, "r", encoding="utf-8") as f:
+        outliers = [line.strip() for line in f if line.strip()]
+except FileNotFoundError:
+    pass
 
-if 'Headphones' in df.columns:
-    req_headphones = st.sidebar.checkbox("Only users wearing headphones", value=True)
-    if req_headphones:
-        df = df[df['Headphones'].astype(str).str.contains("Yes", na=False)]
+if outliers:
+    st.sidebar.markdown("### 🚫 Outliers")
+    with st.sidebar.expander(f"View {len(outliers)} manually identified outliers"):
+        for out_id in outliers:
+            st.markdown(f"- {out_id}")
+    
+    exclude_outliers = st.sidebar.checkbox("Exclude identified outliers", value=True)
+    if exclude_outliers and 'ResponseId' in df.columns:
+        df = df[~df['ResponseId'].isin(outliers)]
 
 if 'ResponseId' in df.columns:
     all_ids = df['ResponseId'].dropna().tolist()
@@ -508,17 +525,17 @@ with tabs[6]:
     col1, col2 = st.columns(2)
     
     with col1:
-        if 'Attention Check 1' in df.columns:
+        if 'Attention Check 1_1' in df.columns:
             st.subheader("Attention Check 1")
             st.caption("Expected answer: **Somewhat disagree**")
-            plot_bar(df, 'Attention Check 1', "", category_order=SCALE_AGREE)
+            plot_bar(df, 'Attention Check 1_1', "", category_order=SCALE_AGREE)
         else:
-            st.warning("Column 'Attention Check 1' not found in dataset.")
+            st.warning("Column 'Attention Check 1_1' not found in dataset.")
             
     with col2:
-        if 'Attention Check 2' in df.columns:
+        if 'Attention Check 2_1' in df.columns:
             st.subheader("Attention Check 2")
             st.caption("Expected answer: **Agree**")
-            plot_bar(df, 'Attention Check 2', "", category_order=SCALE_AGREE)
+            plot_bar(df, 'Attention Check 2_1', "", category_order=SCALE_AGREE)
         else:
-            st.warning("Column 'Attention Check 2' not found in dataset.")
+            st.warning("Column 'Attention Check 2_1' not found in dataset.")
