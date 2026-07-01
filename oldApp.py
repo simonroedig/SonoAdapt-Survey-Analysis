@@ -29,6 +29,10 @@ SCALE_SOCIAL = [
     'Completely unacceptable', 'Unacceptable', 'Somewhat unacceptable', 
     'Neither acceptable nor unacceptable', 'Somewhat acceptable', 'Acceptable', 'Completely Acceptable'
 ]
+SCALE_IMMERSION = [
+    'Very difficult', 'Difficult', 'Somewhat difficult', 
+    'Neither easy nor difficult (or just "Neutral")', 'Somewhat easy', 'Easy', 'Very easy'
+]
 SCALE_ENGLISH = [
     'Cannot understand at all', 'Understand very little', 'Understand somewhat', 
     'Understand moderately well', 'Understand well', 'Understand very well', 'Understand perfectly'
@@ -139,8 +143,6 @@ def plot_scenario_comparison(df, prefix, metric, title, category_order=None):
             merged.rename(columns={col: 'Rating'}, inplace=True)
             counts_dict.append(merged)
             
-    if not counts_dict: return
-            
     counts_df = pd.concat(counts_dict)
     fig = px.bar(counts_df, x='Rating', y='Count', color='Version', barmode='group', title=title, 
                  hover_data=['Participants'],
@@ -170,6 +172,7 @@ def plot_matrix(df, cols, labels, title, barmode='group', category_order=None):
     st.plotly_chart(fig, use_container_width=True)
 
 def display_text_table(df, text_col, title, extra_cols=None):
+    """Helper to display open text cleanly with Participant IDs and related context."""
     if text_col not in df.columns: return
     cols_to_get = ['ResponseId'] + (extra_cols if extra_cols else []) + [text_col]
     available_cols = [c for c in cols_to_get if c in df.columns]
@@ -178,6 +181,7 @@ def display_text_table(df, text_col, title, extra_cols=None):
     temp_df = temp_df[temp_df[text_col].astype(str).str.strip() != ""]
     if temp_df.empty: return
     
+    # Prettify column headers
     rename_dict = {'ResponseId': 'Participant ID'}
     if extra_cols:
         for c in extra_cols: rename_dict[c] = c.split('.')[-1].strip()
@@ -185,10 +189,10 @@ def display_text_table(df, text_col, title, extra_cols=None):
     temp_df = temp_df.rename(columns=rename_dict)
     
     with st.expander(f"📖 {title} ({len(temp_df)} responses)"):
+        # Sort by the contextual column if we have one
         if extra_cols and extra_cols[0] in rename_dict:
             temp_df = temp_df.sort_values(by=rename_dict[extra_cols[0]])
         st.dataframe(temp_df, use_container_width=True, hide_index=True)
-
 
 # --- Main App ---
 st.title("🕶️ Auditory Notifications on Smart Glasses - Dashboard")
@@ -202,34 +206,6 @@ if df is None:
 
 # --- Sidebar Filters ---
 st.sidebar.header("⚙️ Data Filters")
-
-date_col = next((c for c in ['RecordedDate', 'StartDate', 'EndDate'] if c in df.columns), None)
-if date_col:
-    df['__temp_date'] = pd.to_datetime(df[date_col], errors='coerce')
-    min_date = df['__temp_date'].min()
-    max_date = df['__temp_date'].max()
-    
-    if pd.notna(min_date) and pd.notna(max_date):
-        min_d = min_date.date()
-        max_d = max_date.date()
-        
-        st.sidebar.markdown("### 📅 Timeframe Filter")
-        date_selection = st.sidebar.date_input(
-            "Select range to exclude test data:",
-            value=(min_d, max_d),
-            min_value=min_d,
-            max_value=max_d
-        )
-        
-        if len(date_selection) == 2:
-            start_d, end_d = date_selection
-            mask = (df['__temp_date'].dt.date >= start_d) & (df['__temp_date'].dt.date <= end_d)
-            df = df[mask]
-            
-    df = df.drop(columns=['__temp_date'])
-
-st.sidebar.markdown("---")
-
 if 'Finished' in df.columns:
     only_finished = st.sidebar.checkbox("Only include 'Finished' responses", value=True)
     if only_finished:
@@ -247,34 +223,19 @@ if 'ResponseId' in df.columns:
 
 st.sidebar.success(f"**{len(df)}** participants matching criteria.")
 
-
 # --- Dashboard Tabs ---
 tabs = st.tabs([
-    "🖥️ Intro Questions",
-    "👥 Demographics & Background", 
-    "🧠 Familiarization", 
-    "🎬 Scenarios (A-I)", 
-    "🧮 Final Matrices & Feedback"
+    "👥 Demographics", 
+    "📊 Baseline & General Prefs", 
+    "🎬 Scenarios (A-F)", 
+    "🧮 Final Matrices", 
+    "💬 General Feedback"
 ])
 
 # ==========================================
-# TAB 1: Intro Questions
+# TAB 1: Demographics
 # ==========================================
 with tabs[0]:
-    st.header("Introductory & Tech Checks")
-    
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        plot_bar(df, 'Desktop Laptop', "Device Used (Desktop/Laptop)")
-    with c2:
-        plot_bar(df, 'Headphones', "Using Headphones or Earbuds?")
-    with c3:
-        plot_bar(df, 'Headphone Check', "Audio Channel Check (Left/Right/Both)")
-
-# ==========================================
-# TAB 2: Demographics & Background
-# ==========================================
-with tabs[1]:
     st.header("Participant Demographics")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -288,69 +249,75 @@ with tabs[1]:
     with c3:
         plot_bar(df, 'English Skill_1', "English Proficiency", category_order=SCALE_ENGLISH)
 
-    plot_bar(df, 'Language', "Language / Country of Origin", orientation='h')
-    display_text_table(df, 'Impairment_2_TEXT', "Hearing Impairment Details")
-
-    st.divider()
-    st.subheader("Baseline Settings & Smart Glass Familiarity")
-    
     c4, c5 = st.columns(2)
     with c4:
-        plot_bar(df, 'My Notif Settings', "Standard Smartphone Notification Setting", orientation='h')
+        plot_bar(df, 'Culture', "Country of Origin", orientation='h')
     with c5:
+        plot_bar(df, 'Musical Background', "Musical Background", orientation='h')
+        
+    display_text_table(df, 'Impairment_2_TEXT', "Hearing Impairment Details")
+
+# ==========================================
+# TAB 2: Baseline & General Preferences
+# ==========================================
+with tabs[1]:
+    st.header("Baseline Settings & Smart Glass Familiarity")
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        plot_bar(df, 'My Notif Settings', "Standard Smartphone Notification Setting", orientation='h')
+    with c2:
         plot_multiple_choice(df, 'My Notif SettingsWhy', "Reasons for Chosen Setting")
+    
     display_text_table(df, 'My Notif SettingsWhy_6_TEXT', "Other Specific Settings (Text)")
 
-    plot_bar(df, 'Glass Experience_1', "Smart Glass Experience")
+    c3, c4 = st.columns(2)
+    with c3:
+        plot_bar(df, 'Glass Knowledge_1', "Smart Glass Familiarity")
+    with c4:
+        plot_bar(df, 'Glass Experience_1', "Smart Glass Experience")
 
     st.divider()
     st.subheader("Auditory Preferences Independent of Context")
     plot_multiple_choice(df, 'Which Notif Auditory', "Apps Desired for Auditory Notifications via Glasses")
     display_text_table(df, 'Which Notif Auditory_9_TEXT', "Other Specific Apps (Text)")
     
-    c6, c7 = st.columns(2)
-    with c6:
+    c5, c6 = st.columns(2)
+    with c5:
         plot_bar(df, 'Notif ImprtancUrgent_1', "Only notify me for IMPORTANT messages", category_order=SCALE_AGREE)
-    with c7:
+    with c6:
         plot_bar(df, 'Notif ImprtancUrgent_2', "Only notify me for URGENT messages", category_order=SCALE_AGREE)
-
-
-# ==========================================
-# TAB 3: Familiarization
-# ==========================================
-with tabs[2]:
-    st.header("Familiarization Checks & Preferences")
-    
-    plot_bar(df, 'Sender Check', "Sender Check (Which versions inform about sender?)")
-    
+        
     st.divider()
-    st.subheader("General Notification Preference (Independent of Context)")
-    plot_bar(df, 'Preference', "Preferred Version")
-    display_text_table(df, 'Preference Text', "Why prefer chosen version?", extra_cols=['Preference'])
-    
+    st.subheader("💬 Contextual Reasoning: Baseline Preference")
+    c_pref1, c_pref2 = st.columns(2)
+    with c_pref1:
+        display_text_table(df, 'Preference Text', "Why prefer chosen version?", extra_cols=['Preference'])
+    with c_pref2:
+        display_text_table(df, 'Scenes Inappropriate', "Inappropriate Scenarios for preferred version", extra_cols=['Preference'])
+
     st.divider()
     st.subheader("Attitudes Towards Speech Output")
-    c1, c2 = st.columns(2)
-    with c1:
+    c7, c8 = st.columns(2)
+    with c7:
         plot_bar(df, 'Speech Opinion_1', "Assumption: If speech, it must be urgent", category_order=SCALE_AGREE)
-    with c2:
+    with c8:
         plot_bar(df, 'Speech Opinion_2', "Acceptable to read out loud without explicit request?", category_order=SCALE_AGREE)
         
     plot_multiple_choice(df, 'Speech Opinion 2', "Factors influencing attitude towards speech output")
     display_text_table(df, 'Speech Opinion 2_10_TEXT', "Other factors influencing speech attitude (Text)")
     
-    c3, c4 = st.columns(2)
-    with c3:
+    c9, c10 = st.columns(2)
+    with c9:
         plot_multiple_choice(df, 'Maximum Length', "Maximum Acceptable Length for Spoken Notifications")
         display_text_table(df, 'Maximum Length_7_TEXT', "Other Maximum Length specs (Text)")
-    with c4:
+    with c10:
         plot_bar(df, 'Summary Acceptance_1', "Acceptance of AI Summarization for LONG messages", category_order=SCALE_AGREE)
 
-
 # ==========================================
-# TAB 4: Contextual Scenarios (A-I)
+# TAB 3: Scenarios Analysis (A-F)
 # ==========================================
-with tabs[3]:
+with tabs[2]:
     st.header("Contextual Scenarios")
     
     scenarios = {
@@ -359,63 +326,56 @@ with tabs[3]:
         'C': 'Home Music (Relaxing)',
         'D': 'Coffee Bar (Conversation)',
         'E': 'Cycle City (Traffic)',
-        'F': 'Grocery Shopping',
-        'G': 'Scenario G',
-        'H': 'Scenario H',
-        'I': 'Scenario I'
+        'F': 'Grocery Shopping'
     }
     
-    active_scenarios = {k: v for k, v in scenarios.items() if any(col.startswith(f"{k}.") for col in df.columns)}
+    scenario_tabs = st.tabs([f"{k}: {v}" for k, v in scenarios.items()])
     
-    if active_scenarios:
-        scenario_tabs = st.tabs([f"{k}: {v}" for k, v in active_scenarios.items()])
-        
-        for idx, (prefix, name) in enumerate(active_scenarios.items()):
-            with scenario_tabs[idx]:
-                st.subheader(f"Scenario {prefix}: {name}")
-                
-                c1, c2 = st.columns(2)
-                with c1:
-                    plot_scenario_comparison(df, prefix, 'Appropriateness', "Appropriateness", category_order=SCALE_APPROPRIATE)
-                    plot_scenario_comparison(df, prefix, 'Disruption', "Disruption Level", category_order=SCALE_DISRUPT)
-                with c2:
-                    plot_scenario_comparison(df, prefix, 'Detectability', "Detectability", category_order=SCALE_DETECT)
-                    plot_scenario_comparison(df, prefix, 'Social', "Social Acceptability", category_order=SCALE_SOCIAL)
+    for idx, (prefix, name) in enumerate(scenarios.items()):
+        with scenario_tabs[idx]:
+            st.subheader(f"Scenario {prefix}: {name}")
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                plot_scenario_comparison(df, prefix, 'Appropriateness', "Appropriateness", category_order=SCALE_APPROPRIATE)
+                plot_scenario_comparison(df, prefix, 'Disruption', "Disruption Level", category_order=SCALE_DISRUPT)
+            with c2:
+                plot_scenario_comparison(df, prefix, 'Detectability', "Detectability", category_order=SCALE_DETECT)
+                plot_scenario_comparison(df, prefix, 'Social', "Social Acceptability", category_order=SCALE_SOCIAL)
 
-                st.divider()
+            st.divider()
+            
+            c3, c4, c5 = st.columns(3)
+            with c3:
+                plot_bar(df, f"{prefix}. Overall", "Overall Preferred Version")
+            with c4:
+                plot_bar(df, f"{prefix}. Timing", "Preferred Delivery Timing")
+            with c5:
+                plot_bar(df, f"{prefix}. Timing Follow", "If Delayed, Preferred Version")
                 
-                c3, c4, c5 = st.columns(3)
-                with c3:
-                    plot_bar(df, f"{prefix}. Overall", "Overall Preferred Version")
-                with c4:
-                    plot_bar(df, f"{prefix}. Timing", "Preferred Delivery Timing")
-                with c5:
-                    plot_bar(df, f"{prefix}. Timing Follow", "If Delayed, Preferred Version")
-                    
-                st.markdown("**Factors Influencing Choice:**")
-                plot_multiple_choice(df, f"{prefix}. Overall Why", f"Why did they choose this? (Scenario {prefix})")
-                
-                st.divider()
-                st.subheader("💬 Participant Reasoning (Correlated with their Choices)")
-                
-                col_overall = f"{prefix}. Overall"
-                col_overall_txt = f"{prefix}. Why Text"
-                display_text_table(df, col_overall_txt, "Reasons for Overall Preference", extra_cols=[col_overall])
-                
-                display_text_table(df, f"{prefix}. Overall Why_6_TEXT", "Other factors influencing choice (Text)", extra_cols=[col_overall])
+            st.markdown("**Factors Influencing Choice:**")
+            plot_multiple_choice(df, f"{prefix}. Overall Why", f"Why did they choose this? (Scenario {prefix})")
+            
+            # --- CONTEXTUAL OPEN TEXT TABLES ---
+            st.divider()
+            st.subheader("💬 Participant Reasoning (Correlated with their Choices)")
+            
+            col_overall = f"{prefix}. Overall"
+            col_overall_txt = f"{prefix}. Why Text"
+            display_text_table(df, col_overall_txt, "Reasons for Overall Preference", extra_cols=[col_overall])
+            
+            display_text_table(df, f"{prefix}. Overall Why_6_TEXT", "Other factors influencing choice (Text)", extra_cols=[col_overall])
 
-                col_timing = f"{prefix}. Timing"
-                col_timing_fol = f"{prefix}. Timing Follow"
-                col_timing_txt = f"{prefix}. Why Timing Text"
-                display_text_table(df, col_timing_txt, "Reasons for Delivery Timing & Delayed Version", extra_cols=[col_timing, col_timing_fol])
-    else:
-        st.warning("No scenario data (A-I) found in the dataset.")
+            col_timing = f"{prefix}. Timing"
+            col_timing_fol = f"{prefix}. Timing Follow"
+            col_timing_txt = f"{prefix}. Why Timing Text"
+            display_text_table(df, col_timing_txt, "Reasons for Delivery Timing & Delayed Version", extra_cols=[col_timing, col_timing_fol])
 
 
 # ==========================================
-# TAB 5: Final Matrices & Feedback
+# TAB 4: Final Matrices & System Opinion
 # ==========================================
-with tabs[4]:
+with tabs[3]:
     st.header("Final Notification Matrices")
     
     c1, c2 = st.columns(2)
@@ -431,7 +391,23 @@ with tabs[4]:
         plot_matrix(df, delay_cols, pref_labels, "Maximum Delay Tolerance by Message Type", category_order=SCALE_DELAY_MATRIX)
 
     st.divider()
+    st.subheader("Overall AI System Opinions")
+    c3, c4, c5 = st.columns(3)
+    with c3:
+        plot_bar(df, 'System Opinion_1', "Such a system would be useful to me", category_order=SCALE_AGREE)
+    with c4:
+        plot_bar(df, 'System Opinion_2', "I would trust such a system to make the right choice", category_order=SCALE_AGREE)
+    with c5:
+        plot_bar(df, 'System Opinion_3', "Concerned about system choosing wrong type/moment", category_order=SCALE_AGREE)
+        
+    plot_bar(df, 'Realistic Feeling_1', "Ease of Immersion (Mental visualization of scenarios)", category_order=SCALE_IMMERSION)
+
+# ==========================================
+# TAB 5: General Feedback
+# ==========================================
+with tabs[4]:
     st.header("💬 General & Additional Open Text Feedback")
     st.info("These responses represent overall feedback and general concerns not tied to a specific scenario.")
     
+    display_text_table(df, ' System Opinion Why', "General AI System Concerns")
     display_text_table(df, 'Final', "Final Additional Comments & Thoughts")
