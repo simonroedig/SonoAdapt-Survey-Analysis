@@ -471,13 +471,34 @@ with tabs[5]:
         st.subheader("Total Survey Duration")
         df['__temp_duration'] = pd.to_numeric(df[duration_col], errors='coerce')
         
-        # Plot Histogram of total duration
-        fig_dur = px.histogram(df, x='__temp_duration', nbins=20, 
-                               title="Distribution of Total Duration (Seconds)",
-                               labels={'__temp_duration': 'Seconds'},
-                               hover_data=['ResponseId'],
-                               color_discrete_sequence=['#E74C3C'])
-        st.plotly_chart(fig_dur, use_container_width=True)
+        # Plot Histogram of total duration (with manual binning to show IDs)
+        df_clean = df.dropna(subset=['__temp_duration']).copy()
+        if not df_clean.empty and 'ResponseId' in df_clean.columns:
+            df_clean['bin'] = pd.cut(df_clean['__temp_duration'], bins=20)
+            
+            bin_stats = df_clean.groupby('bin', observed=False).agg(
+                Count=('__temp_duration', 'size'),
+                Participants=('ResponseId', lambda x: ', '.join(x.astype(str)))
+            ).reset_index()
+            
+            bin_stats['Duration Range'] = bin_stats['bin'].apply(
+                lambda x: f"{max(0, int(x.left))} - {int(x.right)}s<br>({max(0, x.left)/60:.1f} - {x.right/60:.1f}m)" if pd.notna(x) else ""
+            )
+            
+            fig_dur = px.bar(bin_stats, x='Duration Range', y='Count', 
+                             title="Distribution of Total Duration",
+                             labels={'Duration Range': 'Duration'},
+                             hover_data=['Participants'],
+                             color_discrete_sequence=['#E74C3C'])
+            fig_dur.update_layout(xaxis_tickangle=-45)
+            st.plotly_chart(fig_dur, use_container_width=True)
+        else:
+            fig_dur = px.histogram(df, x='__temp_duration', nbins=20, 
+                                   title="Distribution of Total Duration (Seconds)",
+                                   labels={'__temp_duration': 'Seconds'},
+                                   hover_data=['ResponseId'] if 'ResponseId' in df.columns else None,
+                                   color_discrete_sequence=['#E74C3C'])
+            st.plotly_chart(fig_dur, use_container_width=True)
         
         # Show min/max/avg
         avg_dur = df['__temp_duration'].mean()
