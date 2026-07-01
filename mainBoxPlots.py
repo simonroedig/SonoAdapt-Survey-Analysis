@@ -5,6 +5,7 @@ import os
 
 # Configure fonts to properly render emojis (falling back to Segoe UI Emoji on Windows)
 plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu Sans']
+
 # ==========================================
 # CONFIGURATION & MAPPINGS
 # ==========================================
@@ -16,17 +17,17 @@ NOTIFICATION_TYPES = {
     '3': 'Rich Speech'
 }
 
-# 2. Scenario Definitions
+# 2. Scenario Definitions (Corrected to 3x3x3 Orthogonal Design)
 SCENARIO_MAPPING = {
-    'A': {'Social': 'Alone',       'Task': 'High mental',   'Soundscape': 'Quiet'},
-    'B': {'Social': 'Interactive', 'Task': 'Low',           'Soundscape': 'Music'}, 
-    'C': {'Social': 'Passive',     'Task': 'High physical', 'Soundscape': 'Speech'}, 
-    'D': {'Social': 'Alone',       'Task': 'Low',           'Soundscape': 'Quiet'}, 
-    'E': {'Social': 'Interactive', 'Task': 'High mental',   'Soundscape': 'Music'}, 
-    'F': {'Social': 'Passive',     'Task': 'Low',           'Soundscape': 'Speech'}, 
-    'G': {'Social': 'Alone',       'Task': 'High physical', 'Soundscape': 'Quiet'}, 
-    'H': {'Social': 'Interactive', 'Task': 'High physical', 'Soundscape': 'Music'}, 
-    'I': {'Social': 'Passive',     'Task': 'High mental',   'Soundscape': 'Speech'}, 
+    'A': {'Social': 'Alone',       'Task': 'High mental',   'Soundscape': 'Quiet'},  # Desk coding
+    'B': {'Social': 'Interactive', 'Task': 'High mental',   'Soundscape': 'Speech'}, # Team meeting
+    'C': {'Social': 'Alone',       'Task': 'Low',           'Soundscape': 'Music'},  # Relaxing at home
+    'D': {'Social': 'Interactive', 'Task': 'High physical', 'Soundscape': 'Music'},  # Setting up tent 
+    'E': {'Social': 'Passive',     'Task': 'High physical', 'Soundscape': 'Quiet'},  # Cycling street
+    'F': {'Social': 'Passive',     'Task': 'Low',           'Soundscape': 'Speech'}, # Grocery shopping
+    'G': {'Social': 'Alone',       'Task': 'High physical', 'Soundscape': 'Speech'}, # Cooking + Podcast
+    'H': {'Social': 'Passive',     'Task': 'High mental',   'Soundscape': 'Music'},  # Study Coffee Shop
+    'I': {'Social': 'Interactive', 'Task': 'Low',           'Soundscape': 'Quiet'},  # Quiet Friend over
 }
 
 # Ordered Categories for x-axes
@@ -46,19 +47,36 @@ TITLE_EMOJIS = {
     'Rich Speech': 'Rich Speech (\U0001f5e3 \U0001f5e3)'
 }
 
-# 3. Likert text to numeric conversion mapping. 
+# 3. Likert text to numeric conversion mapping (Corrected to match survey PDF exactly)
 LIKERT_MAP = {
     # Detectability mappings
-    "Very difficult to detect": 1, "Difficult to detect": 2, "Somewhat difficult to detect": 3,
-    "Neutral (Detectability)": 4, 
-    "Somewhat easy to detect": 5, "Easy to detect": 6, "Very easy to detect": 7,
+    "Very difficult to detect": 1, 
+    "Difficult to detect": 2, 
+    "Somewhat difficult to detect": 3,
+    "Neither easy nor difficult to detect": 4, 
+    "Somewhat easy to detect": 5, 
+    "Easy to detect": 6, 
+    "Very easy to detect": 7,
+    
     # Disruption mappings
-    "Not disruptive at all": 1, "Slightly disruptive": 2, "Somewhat disruptive": 3,
-    "Neutral (Disruption)": 4,
-    "Disruptive": 5, "Very disruptive": 6, "Completely disruptive": 7,
+    "Not disruptive at all": 1, 
+    "Slightly disruptive": 2, 
+    "Somewhat disruptive": 3,
+    "Moderately disruptive": 4,
+    "Disruptive": 5, 
+    "Very disruptive": 6, 
+    "Extremely disruptive": 7,
+    
     # Social mappings
-    "Completely unacceptable": 1, "Somewhat unacceptable": 2, "Neither acceptable nor unacceptable": 4,
-    "Somewhat acceptable": 5, "Acceptable": 6, "Completely acceptable": 7
+    "Completely unacceptable": 1, 
+    "Unacceptable": 2, 
+    "Somewhat unacceptable": 3,
+    "Neither acceptable nor unacceptable": 4,
+    "Somewhat acceptable": 5, 
+    "Acceptable": 6, 
+    "Completely acceptable": 7,
+    "Completely Acceptable": 7,
+    "Completel Acceptable": 7  # Catching the typo present in the PDF matrix tables
 }
 
 # ==========================================
@@ -187,7 +205,7 @@ def create_boxplots(long_df):
                     "Neither acceptable nor unacceptable (4)",
                     "Somewhat acceptable (5)",
                     "Acceptable (6)",
-                    "Completely Acceptable (7)"
+                    "Completely acceptable (7)"
                 ],
                 fontsize=10
             )
@@ -196,7 +214,7 @@ def create_boxplots(long_df):
             plt.savefig(f"Plot1_{t_name.replace(' ', '')}_Social.png", dpi=300)
             plt.close()
         else:
-            print(f"⚠️ Skipping Plot 1 (Social) for {t_name}: No valid numeric data found.")
+            print(f"Warning: Skipping Plot 1 (Social) for {t_name}: No valid numeric data found.")
 
         # ==========================================================
         # Plot 2: Task Load (e-Task) vs Disruption
@@ -231,7 +249,7 @@ def create_boxplots(long_df):
             plt.savefig(f"Plot2_{t_name.replace(' ', '')}_Disruption.png", dpi=300)
             plt.close()
         else:
-            print(f"⚠️ Skipping Plot 2 (Disruption) for {t_name}: No valid numeric data found.")
+            print(f"Warning: Skipping Plot 2 (Disruption) for {t_name}: No valid numeric data found.")
 
         # ==========================================================
         # Plot 3: Soundscape (CM) vs Detectability
@@ -266,7 +284,7 @@ def create_boxplots(long_df):
             plt.savefig(f"Plot3_{t_name.replace(' ', '')}_Detectability.png", dpi=300)
             plt.close()
         else:
-            print(f"⚠️ Skipping Plot 3 (Detectability) for {t_name}: No valid numeric data found.")
+            print(f"Warning: Skipping Plot 3 (Detectability) for {t_name}: No valid numeric data found.")
 
     print("Finished plot generation process.")
 
@@ -280,4 +298,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
