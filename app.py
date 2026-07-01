@@ -240,15 +240,6 @@ if 'Headphones' in df.columns:
     if req_headphones:
         df = df[df['Headphones'].astype(str).str.contains("Yes", na=False)]
 
-# NEW: Attention Check Filtering
-if 'Attention Check 1' in df.columns and 'Attention Check 2' in df.columns:
-    pass_attention = st.sidebar.checkbox("Only users who passed Attention Checks", value=True)
-    if pass_attention:
-        df = df[
-            (df['Attention Check 1'].astype(str).str.contains('Somewhat disagree', na=False)) & 
-            (df['Attention Check 2'].astype(str).str.contains('Agree', na=False))
-        ]
-
 if 'ResponseId' in df.columns:
     all_ids = df['ResponseId'].dropna().tolist()
     selected_ids = st.sidebar.multiselect("Select Participants (ResponseId)", all_ids, default=all_ids)
@@ -264,7 +255,8 @@ tabs = st.tabs([
     "🧠 Familiarization", 
     "🎬 Scenarios (A-I)", 
     "🧮 Final Matrices & Feedback",
-    "⏱️ Timing Analysis"  # NEW TAB
+    "⏱️ Timing Analysis",
+    "⚠️ Attention Checks"
 ])
 
 # ==========================================
@@ -419,7 +411,6 @@ with tabs[3]:
                 col_timing_txt = f"{prefix}. Why Timing Text"
                 display_text_table(df, col_timing_txt, "Reasons for Delivery Timing & Delayed Version", extra_cols=[col_timing, col_timing_fol])
                 
-                # NEW: Capture "Other" text inputs on the timing question
                 display_text_table(df, f"{prefix}. Timing_5_TEXT", "Other specified timing (Text)", extra_cols=[col_timing])
     else:
         st.warning("No scenario data (A-I) found in the dataset.")
@@ -451,7 +442,7 @@ with tabs[4]:
 
 
 # ==========================================
-# TAB 6: Timing Analysis (NEW)
+# TAB 6: Timing Analysis
 # ==========================================
 with tabs[5]:
     st.header("⏱️ Survey Timing & Duration Analysis")
@@ -505,3 +496,29 @@ with tabs[5]:
         st.dataframe(summary_time, use_container_width=True)
     else:
         st.info("No detailed 'Page Submit' timing columns found in the dataset. Ensure you exported the timing data variables from Qualtrics.")
+
+
+# ==========================================
+# TAB 7: Attention Checks (NEW)
+# ==========================================
+with tabs[6]:
+    st.header("⚠️ Attention Checks")
+    st.markdown("Review the responses to the embedded attention checks to identify potential outliers or unengaged participants. **Hover over the bars to see Participant IDs.**")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if 'Attention Check 1' in df.columns:
+            st.subheader("Attention Check 1")
+            st.caption("Expected answer: **Somewhat disagree**")
+            plot_bar(df, 'Attention Check 1', "", category_order=SCALE_AGREE)
+        else:
+            st.warning("Column 'Attention Check 1' not found in dataset.")
+            
+    with col2:
+        if 'Attention Check 2' in df.columns:
+            st.subheader("Attention Check 2")
+            st.caption("Expected answer: **Agree**")
+            plot_bar(df, 'Attention Check 2', "", category_order=SCALE_AGREE)
+        else:
+            st.warning("Column 'Attention Check 2' not found in dataset.")
