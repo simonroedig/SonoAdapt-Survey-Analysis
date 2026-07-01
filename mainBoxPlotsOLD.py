@@ -10,6 +10,16 @@ plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu 
 # CONFIGURATION & MAPPINGS
 # ==========================================
 
+# Toggle this flag to show/hide sample sizes and debug info on the generated plots
+DEBUG_MODE = False 
+
+# Toggle this flag to exclude/include predefined outliers from the text file
+REMOVE_OUTLIERS = True
+
+# Date Filtering Range (Format: 'YYYY-MM-DD' or None)
+START_DATE = "2026-06-30"  # Includes this date and later
+END_DATE = None            # Set to a date string to cap the range (e.g., "2026-07-02"), or leave as None
+
 # 1. Notification Types
 NOTIFICATION_TYPES = {
     '1': 'Earcon',
@@ -83,23 +93,34 @@ LIKERT_MAP = {
 # FUNCTIONS
 # ==========================================
 
-def load_and_filter_data(data_path, outliers_path, target_date="2026-06-30"):
-    """Reads data, excludes outliers, and filters by date."""
+def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_date=END_DATE, remove_outliers=REMOVE_OUTLIERS):
+    """Reads data, excludes outliers (if enabled), and filters by the global date range."""
     print("Loading data...")
     df = pd.read_excel(data_path)
     
     df['RecordedDate'] = pd.to_datetime(df['RecordedDate'], errors='coerce', format='mixed')
-    df = df[df['RecordedDate'] >= pd.to_datetime(target_date)]
-    print(f"Data remaining after date filtering ({target_date}): {len(df)} rows.")
-
-    if os.path.exists(outliers_path):
-        with open(outliers_path, 'r') as f:
-            outliers = [line.strip() for line in f if line.strip()]
+    
+    # Apply Date Filters
+    if start_date:
+        df = df[df['RecordedDate'] >= pd.to_datetime(start_date)]
+    if end_date:
+        df = df[df['RecordedDate'] <= pd.to_datetime(end_date)]
         
-        df = df[~df['ResponseId'].isin(outliers)]
-        print(f"Excluded {len(outliers)} outliers. Final row count: {len(df)}.")
+    range_str = f"from {start_date or 'beginning'} to {end_date or 'latest'}"
+    print(f"Data remaining after date filtering ({range_str}): {len(df)} rows.")
+
+    # Apply Outlier Filter
+    if remove_outliers:
+        if os.path.exists(outliers_path):
+            with open(outliers_path, 'r') as f:
+                outliers = [line.strip() for line in f if line.strip()]
+            
+            df = df[~df['ResponseId'].isin(outliers)]
+            print(f"Excluded {len(outliers)} outliers. Final row count: {len(df)}.")
+        else:
+            print(f"Outlier file '{outliers_path}' not found. Skipping outlier exclusion.")
     else:
-        print("Outlier file not found. Skipping outlier exclusion.")
+        print("Outlier exclusion is DISABLED via global flag. Keeping all data points.")
         
     return df
 
@@ -164,6 +185,19 @@ def transform_to_long_format(df):
     return pd.DataFrame(long_data)
 
 
+def add_debug_overlay(ax, df, x_col):
+    """Helper function to draw the debug text box on a plot."""
+    n_total = len(df)
+    counts = df[x_col].value_counts().to_dict()
+    
+    debug_text = f"DEBUG MODE: ON\nTotal n = {n_total}\n" + "-"*15 + "\n"
+    debug_text += "\n".join([f"{k}: {v}" for k, v in counts.items()])
+    
+    ax.text(0.98, 0.02, debug_text, transform=ax.transAxes, 
+            fontsize=9, fontfamily='monospace',
+            verticalalignment='bottom', horizontalalignment='right',
+            bbox=dict(boxstyle='round,pad=0.5', facecolor='#ffffff', alpha=0.9, edgecolor='red', linewidth=1.5))
+
 def create_boxplots(long_df):
     """Generates and saves the 9 specific boxplots with custom y-axis anchoring."""
     print("Generating plots...")
@@ -186,8 +220,8 @@ def create_boxplots(long_df):
         # ==========================================================
         plot1_df = type_df.dropna(subset=['Social Acceptability'])
         if not plot1_df.empty:
-            plt.figure(figsize=(9, 6)) # Made slightly wider to accommodate labels
-            sns.boxplot(
+            plt.figure(figsize=(9, 6))
+            ax = sns.boxplot(
                 data=plot1_df, x='Asocial', y='Social Acceptability', 
                 order=ORDER_SOCIAL, palette=PALETTE_SOCIAL
             )
@@ -195,7 +229,6 @@ def create_boxplots(long_df):
             plt.xlabel(r"$A_{SOCIAL}$", fontsize=12)
             plt.ylabel("Social Acceptability", fontsize=12)
             
-            # Custom Y-Axis Labels
             plt.yticks(
                 ticks=ticks_1_to_7, 
                 labels=[
@@ -210,6 +243,10 @@ def create_boxplots(long_df):
                 fontsize=10
             )
             plt.ylim(0.5, 7.5)
+            
+            if DEBUG_MODE:
+                add_debug_overlay(ax, plot1_df, 'Asocial')
+
             plt.tight_layout()
             plt.savefig(f"Plot1_{t_name.replace(' ', '')}_Social.png", dpi=300)
             plt.close()
@@ -222,7 +259,7 @@ def create_boxplots(long_df):
         plot2_df = type_df.dropna(subset=['Disruption'])
         if not plot2_df.empty:
             plt.figure(figsize=(9, 6))
-            sns.boxplot(
+            ax = sns.boxplot(
                 data=plot2_df, x='e-Task', y='Disruption', 
                 order=ORDER_TASK, palette=PALETTE_TASK
             )
@@ -230,7 +267,6 @@ def create_boxplots(long_df):
             plt.xlabel(r"$E_{TASK}$", fontsize=12)
             plt.ylabel("Disruption", fontsize=12)
             
-            # Custom Y-Axis Labels
             plt.yticks(
                 ticks=ticks_1_to_7, 
                 labels=[
@@ -245,6 +281,10 @@ def create_boxplots(long_df):
                 fontsize=10
             )
             plt.ylim(0.5, 7.5)
+            
+            if DEBUG_MODE:
+                add_debug_overlay(ax, plot2_df, 'e-Task')
+
             plt.tight_layout()
             plt.savefig(f"Plot2_{t_name.replace(' ', '')}_Disruption.png", dpi=300)
             plt.close()
@@ -257,7 +297,7 @@ def create_boxplots(long_df):
         plot3_df = type_df.dropna(subset=['Detectability'])
         if not plot3_df.empty:
             plt.figure(figsize=(9, 6))
-            sns.boxplot(
+            ax = sns.boxplot(
                 data=plot3_df, x='CM', y='Detectability', 
                 order=ORDER_SOUND, palette=PALETTE_SOUND
             )
@@ -265,7 +305,6 @@ def create_boxplots(long_df):
             plt.xlabel(r"$C_M$", fontsize=12)
             plt.ylabel("Detectability", fontsize=12)
             
-            # Custom Y-Axis Labels
             plt.yticks(
                 ticks=ticks_1_to_7, 
                 labels=[
@@ -280,6 +319,10 @@ def create_boxplots(long_df):
                 fontsize=10
             )
             plt.ylim(0.5, 7.5)
+            
+            if DEBUG_MODE:
+                add_debug_overlay(ax, plot3_df, 'CM')
+
             plt.tight_layout()
             plt.savefig(f"Plot3_{t_name.replace(' ', '')}_Detectability.png", dpi=300)
             plt.close()
@@ -298,3 +341,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
