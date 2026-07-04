@@ -4,16 +4,16 @@ import seaborn as sns
 import os
 import statsmodels.formula.api as smf
 import warnings
-warnings.filterwarnings('ignore') # Unterdrückt irrelevante Warnungen bei der Modell-Konvergenz
+warnings.filterwarnings('ignore')
 
-# Configure fonts to properly render emojis (falling back to Segoe UI Emoji on Windows)
+# Configure fonts
 plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu Sans']
 
 # ==========================================
 # CONFIGURATION & MAPPINGS
 # ==========================================
 
-GENERATE_PLOTS = True               # Toggle dies auf True, um die Plots mit Werten neu zu generieren
+GENERATE_PLOTS = True
 DEBUG_MODE = False 
 REMOVE_OUTLIERS = True
 GENERATE_SECONDARY_PLOTS = False
@@ -28,7 +28,6 @@ NOTIFICATION_TYPES = {
     '3': 'Rich Speech'
 }
 
-# 2. Scenario Definitions
 SCENARIO_MAPPING = {
     'A': {'Social': 'Alone',       'Task': 'High mental',   'Soundscape': 'Quiet'},  
     'B': {'Social': 'Interactive', 'Task': 'High mental',   'Soundscape': 'Speech'}, 
@@ -41,7 +40,6 @@ SCENARIO_MAPPING = {
     'I': {'Social': 'Interactive', 'Task': 'Low',           'Soundscape': 'Quiet'},  
 }
 
-# 3. Independent Variable Properties
 IV_PROPS = {
     'Asocial': {
         'order': ['Alone', 'Interactive', 'Passive'], 
@@ -63,7 +61,6 @@ IV_PROPS = {
     }
 }
 
-# 4. Dependent Variable Labels
 DV_Y_LABELS = {
     'Social_Acceptability': [
         "Completely unacceptable (1)", "Unacceptable (2)", "Somewhat unacceptable (3)",
@@ -90,7 +87,8 @@ DV_Y_LABELS = {
 TITLE_EMOJIS = {
     'Earcon': 'Earcon (\U0001f514)',
     'Short Speech': 'Short Speech (\U0001f5e3)',
-    'Rich Speech': 'Rich Speech (\U0001f5e3 \U0001f5e3)'
+    'Rich Speech': 'Rich Speech (\U0001f5e3 \U0001f5e3)',
+    'Overall': 'Overall Average (\U0001f4c8)' # Chart emoji für den Gesamtschnitt
 }
 
 LIKERT_MAP = {
@@ -142,8 +140,6 @@ def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_da
             removed_outliers_count = df['ResponseId'].isin(outliers).sum()
             df = df[~df['ResponseId'].isin(outliers)]
             print(f"Excluded {removed_outliers_count} outliers.")
-        else:
-            print(f"Outlier file '{outliers_path}' not found.")
             
     stats = {
         'raw_original': raw_count,
@@ -187,7 +183,7 @@ def transform_to_long_format(df):
                 if isinstance(val_social, str): val_social = LIKERT_MAP.get(val_social.strip(), val_social)
                 if isinstance(val_approp, str): val_approp = LIKERT_MAP.get(val_approp.strip(), val_approp)
 
-                if pd.isna(val_detect) and pd.isna(val_disrupt) and pd.isna(val_social) and pd.isna(val_approp):
+                if pd.isna(val_detect) and pd.isna(val_disrupt) and pd.isna(val_social):
                     continue
 
                 long_data.append({
@@ -217,13 +213,22 @@ def add_debug_overlay(ax, df, x_col):
 
 def create_boxplots(long_df):
     os.makedirs("plots", exist_ok=True)
-    plot_count = 27 if GENERATE_SECONDARY_PLOTS else 9
+    plot_count = 36 if GENERATE_SECONDARY_PLOTS else 12 # 4 Plots pro Beziehung (3 Typen + 1 Overall)
     print(f"\nGenerating {plot_count} plots with mean values...")
     sns.set_theme(style="whitegrid")
     ticks_1_to_7 = [1, 2, 3, 4, 5, 6, 7]
 
-    for t_id, t_name in NOTIFICATION_TYPES.items():
-        type_df = long_df[long_df['Notification_Type'] == t_name]
+    # Wir fügen 'Overall' als vierte Kategorie zur Schleife hinzu
+    types_to_plot = list(NOTIFICATION_TYPES.values()) + ['Overall']
+
+    for t_name in types_to_plot:
+        
+        # Für 'Overall' filtern wir NICHT nach dem Typ, sondern nehmen alle Daten
+        if t_name == 'Overall':
+            type_df = long_df.copy()
+        else:
+            type_df = long_df[long_df['Notification_Type'] == t_name]
+            
         if type_df.empty: continue
             
         t_title = TITLE_EMOJIS.get(t_name, t_name)
@@ -239,7 +244,6 @@ def create_boxplots(long_df):
             
             plt.figure(figsize=(9, 6))
             
-            # Showmeans=True fügt das Mittelwert-Zeichen hinzu
             meanprops={"marker":"X", "markerfacecolor":"white", "markeredgecolor":"black", "markersize":"8"}
             ax = sns.boxplot(
                 data=plot_df, x=iv, y=dv, 
@@ -247,7 +251,6 @@ def create_boxplots(long_df):
                 showmeans=True, meanprops=meanprops
             )
             
-            # Text-Labels für M und SD berechnen und plotten
             means = plot_df.groupby(iv)[dv].mean()
             stds = plot_df.groupby(iv)[dv].std()
             
@@ -255,7 +258,6 @@ def create_boxplots(long_df):
                 if label in means.index:
                     mean_val = means[label]
                     std_val = stds[label]
-                    # Platziert den Text am oberen Rand des Graphen (Y=7.2)
                     ax.text(tick, 7.2, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
                             horizontalalignment='center', size='small', color='black', weight='bold')
 
@@ -264,9 +266,7 @@ def create_boxplots(long_df):
             plt.ylabel(dv.replace('_', ' '), fontsize=12)
             
             plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
-            
-            # Y-Achse etwas nach oben erweitern, damit Platz für den Text ist
-            plt.ylim(0.5, 7.6)
+            plt.ylim(0.5, 7.7)
             
             if DEBUG_MODE: add_debug_overlay(ax, plot_df, iv)
 
@@ -286,7 +286,7 @@ def main():
     if GENERATE_PLOTS:
         create_boxplots(long_df)
     else:
-        print("\nSkipping plot generation (GENERATE_PLOTS = False).")
+        print("\nSkipping plot generation.")
 
     print("\n" + "="*50)
     print("PLOTS GENERATED SUCCESSFULLY")
