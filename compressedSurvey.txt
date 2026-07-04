@@ -1,0 +1,133 @@
+# SonoAdapt Online Survey Compressed to Save Tokens
+
+## 1. Introduction, Consent, & Setup
+
+* **Context:** Study on how smart glasses can intelligently adapt audio notifications based on the user's environment.
+
+
+* **Requirements:** Desktop/laptop only, headphones/earbuds required, good English proficiency.
+
+
+* **Consent:** Standard GDPR compliance, anonymous data collection, voluntary participation.
+
+
+* **Tech Checks:** Verification of headphone use, audio volume adjustment, and left/right/both channel audio check.
+
+
+
+---
+
+## 2. Demographics & Background
+
+* **Basic Demographics:** Age, Gender, Native Language, English proficiency (1-7 scale), and Hearing impairment status.
+
+
+* **Notification Habits:** Current standard smartphone notification setting (mute, visual, vibrate, audio combinations) and the primary reason for this setting (Social, Focus, Privacy, Awareness, Habit).
+
+
+* **Smart Glasses Experience:** Frequency of prior smart (AI) glasses usage.
+
+
+* **Notification Preferences:** Types of notifications users would want auditorily via smart glasses (Calls, Messages, Emails, Calendar, Navigation, etc.).
+
+
+* **Importance/Urgency:** Agreement scales (1-7) on whether users only want auditory notifications for highly important or highly urgent messages.
+
+
+
+---
+
+## 3. Familiarization Phase
+
+* **The Stimulus:** Users are introduced to an urgent and important WhatsApp message from a close friend named Lilly: "When are you here?".
+
+
+* **The Versions:** Users listen to 3 distinct audio notification versions delivered privately via smart glasses speakers.
+
+
+* **Comprehension & Preference:** Users identify which versions stated the sender's name and choose their general preferred version (or none) with a text explanation.
+
+
+* **Speech Acceptability:** 1-7 agreement scale on assuming speech output means the message is urgent/important, and general acceptability of unprompted speech notifications.
+
+
+* **Follow-ups:** Factors influencing speech acceptability (Privacy, Understanding, Intrusiveness, Context, etc.), acceptable maximum length of spoken notifications, and acceptance of automatic summarization for long messages.
+
+
+
+---
+
+## 4. The 9 Contextual Scenarios
+
+**The Situations (A-I):**
+
+* **Scenario A:** Home Alone Computer – Writing code, solving a complex problem.
+
+
+* **Scenario B:** Team Meeting – Lively office meeting, continuous background speech.
+
+
+* **Scenario C:** Home Music – Relaxing alone with loud stereo music playing.
+
+
+* **Scenario D:** Tent – Physically setting up a tent outdoors with friends and music.
+
+
+* **Scenario E:** Cycle City – Cycling alone through a quiet city street with minor traffic.
+
+
+* **Scenario F:** Grocery Shopping – In a supermarket with occupied hands, background noise, and announcements.
+
+
+* **Scenario G:** Cooking Dinner – Home alone cooking while listening to a podcast.
+
+
+* **Scenario H:** Study Coffee Shop – Studying alone with loud background music and people around.
+
+
+* **Scenario I:** Quiet Friend Over – Lively conversation with a friend who temporarily checks her phone.
+
+
+
+**Standard Question Block (Asked for EVERY Scenario A-I):**
+
+* **Appropriateness:** Rate Version 1, 2, and 3 (1-7 scale from Completely inappropriate to Completely appropriate).
+
+
+* **Detectability:** Rate Version 1, 2, and 3 (1-7 scale from Very difficult to Very easy to detect).
+
+
+* **Disruption:** Rate Version 1, 2, and 3 (1-7 scale from Not disruptive at all to Extremely disruptive).
+
+
+* **Social Acceptability:** Rate Version 1, 2, and 3 (1-7 scale from Completely unacceptable to Completely acceptable).
+
+
+* **Overall Preference:** Choose Version 1, 2, 3, or None, followed by a free-text explanation.
+
+
+* **Influencing Factors:** Select reasons for preference (Acoustic, Focus, Social, Safety, Info, Other).
+
+
+* **Timing Preference:** Choose when the audio should play (Immediately, at a natural pause/break, after task completion, or later).
+
+
+* **Delay Fallback:** If delayed timing was chosen, select which notification version should play when that time arrives, followed by a free-text explanation.
+
+
+
+(Note: Two standard Attention Checks asking the user to select a specific Likert scale option are interspersed between scenarios to verify data quality.)
+
+---
+
+## 5. Final Evaluation Matrices
+
+* **Preference Matrix:** Users select their preferred audio notification style (Mute, Sound Only, Speech Sender, Speech Sender+Content) across four different message types: Simple acknowledgment, Routine update, Great non-urgent news, and Time-sensitive/action-required situations.
+
+
+* **Delay Acceptability Matrix:** Users define the maximum acceptable delay (No delay, Brief delay/seconds, Moderate delay/minutes, Indefinite delay/hours) for the same four message types listed above.
+
+
+* **Final Comments:** Optional open-text field for additional thoughts or impressions.
+
+# End of compressed user survey
