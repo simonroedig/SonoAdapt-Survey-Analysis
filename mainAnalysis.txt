@@ -15,75 +15,93 @@ RUNNING LINEAR MIXED MODELS (LMM)
                      Mixed Linear Model Regression Results
 ================================================================================
 Model:                    MixedLM         Dependent Variable:         Disruption
-No. Observations:         999             Method:                     REML      
-No. Groups:               37              Scale:                      2.3033    
-Min. group size:          27              Log-Likelihood:             -1884.5668
+No. Observations:         999             Method:                     ML        
+No. Groups:               37              Scale:                      2.2842    
+Min. group size:          27              Log-Likelihood:             -1873.2552
 Max. group size:          27              Converged:                  Yes       
 Mean group size:          27.0                                                  
 --------------------------------------------------------------------------------
                                      Coef.  Std.Err.    z    P>|z| [0.025 0.975]
 --------------------------------------------------------------------------------
-Intercept                             3.763    0.207  18.218 0.000  3.358  4.168
-C(Notification_Type)[T.Rich Speech]   1.571    0.118  13.353 0.000  1.340  1.801
-C(Notification_Type)[T.Short Speech]  1.138    0.118   9.677 0.000  0.908  1.369
-C(Asocial)[T.Interactive]             0.090    0.118   0.766 0.444 -0.140  0.321
-C(Asocial)[T.Passive]                -0.300    0.118  -2.553 0.011 -0.531 -0.070
-C(e_Task)[T.High physical]           -1.477    0.118 -12.562 0.000 -1.708 -1.247
-C(e_Task)[T.Low]                     -1.408    0.118 -11.975 0.000 -1.639 -1.178
-C(CM)[T.Quiet]                        0.486    0.118   4.136 0.000  0.256  0.717
-C(CM)[T.Speech]                       0.727    0.118   6.179 0.000  0.496  0.957
-Group Var                             0.811    0.142                            
+Intercept                             3.763    0.205  18.394 0.000  3.362  4.164
+C(Notification_Type)[T.Rich Speech]   1.571    0.117  13.409 0.000  1.341  1.800
+C(Notification_Type)[T.Short Speech]  1.138    0.117   9.717 0.000  0.909  1.368
+C(Asocial)[T.Interactive]             0.090    0.117   0.769 0.442 -0.139  0.320
+C(Asocial)[T.Passive]                -0.300    0.117  -2.564 0.010 -0.530 -0.071
+C(e_Task)[T.High physical]           -1.477    0.117 -12.614 0.000 -1.707 -1.248
+C(e_Task)[T.Low]                     -1.408    0.117 -12.025 0.000 -1.638 -1.179
+C(CM)[T.Quiet]                        0.486    0.117   4.154 0.000  0.257  0.716
+C(CM)[T.Speech]                       0.727    0.117   6.205 0.000  0.497  0.956
+Group Var                             0.787    0.137                            
 ================================================================================
+
+--- Fit Statistics for Disruption ---
+AIC:      3768.51
+R2_marg:  0.361
+R2_cond:  0.524
+----------------------------------------
 
 
 --- MODEL 2: SOCIAL ACCEPTABILITY ---
                      Mixed Linear Model Regression Results
 ================================================================================
 Model:                  MixedLM     Dependent Variable:     Social_Acceptability
-No. Observations:       999         Method:                 REML                
-No. Groups:             37          Scale:                  2.1272              
-Min. group size:        27          Log-Likelihood:         -1847.2726          
+No. Observations:       999         Method:                 ML                  
+No. Groups:             37          Scale:                  2.1095              
+Min. group size:        27          Log-Likelihood:         -1835.6607          
 Max. group size:        27          Converged:              Yes                 
 Mean group size:        27.0                                                    
 --------------------------------------------------------------------------------
                                      Coef.  Std.Err.    z    P>|z| [0.025 0.975]
 --------------------------------------------------------------------------------
-Intercept                             6.123    0.205  29.832 0.000  5.721  6.525
-C(Notification_Type)[T.Rich Speech]  -0.856    0.113  -7.572 0.000 -1.077 -0.634
-C(Notification_Type)[T.Short Speech] -0.625    0.113  -5.526 0.000 -0.846 -0.403
-C(Asocial)[T.Interactive]            -1.538    0.113 -13.603 0.000 -1.759 -1.316
-C(Asocial)[T.Passive]                -0.222    0.113  -1.966 0.049 -0.444 -0.001
-C(e_Task)[T.High physical]            0.766    0.113   6.775 0.000  0.544  0.987
-C(e_Task)[T.Low]                      0.718    0.113   6.350 0.000  0.496  0.939
-C(CM)[T.Quiet]                       -0.691    0.113  -6.111 0.000 -0.912 -0.469
-C(CM)[T.Speech]                      -0.952    0.113  -8.422 0.000 -1.173 -0.730
-Group Var                             0.850    0.153                            
+Intercept                             6.123    0.203  30.127 0.000  5.725  6.521
+C(Notification_Type)[T.Rich Speech]  -0.856    0.113  -7.604 0.000 -1.076 -0.635
+C(Notification_Type)[T.Short Speech] -0.625    0.113  -5.549 0.000 -0.845 -0.404
+C(Asocial)[T.Interactive]            -1.538    0.113 -13.660 0.000 -1.758 -1.317
+C(Asocial)[T.Passive]                -0.222    0.113  -1.974 0.048 -0.443 -0.002
+C(e_Task)[T.High physical]            0.766    0.113   6.803 0.000  0.545  0.986
+C(e_Task)[T.Low]                      0.718    0.113   6.376 0.000  0.497  0.938
+C(CM)[T.Quiet]                       -0.691    0.113  -6.136 0.000 -0.911 -0.470
+C(CM)[T.Speech]                      -0.952    0.113  -8.457 0.000 -1.173 -0.731
+Group Var                             0.825    0.147                            
 ================================================================================
+
+--- Fit Statistics for Social Acceptability ---
+AIC:      3693.32
+R2_marg:  0.357
+R2_cond:  0.538
+----------------------------------------
 
 
 --- MODEL 3: DETECTABILITY ---
                      Mixed Linear Model Regression Results
 ===============================================================================
 Model:                    MixedLM       Dependent Variable:       Detectability
-No. Observations:         999           Method:                   REML         
-No. Groups:               37            Scale:                    1.6393       
-Min. group size:          27            Log-Likelihood:           -1719.4861   
+No. Observations:         999           Method:                   ML           
+No. Groups:               37            Scale:                    1.6256       
+Min. group size:          27            Log-Likelihood:           -1706.7347   
 Max. group size:          27            Converged:                Yes          
 Mean group size:          27.0                                                 
 -------------------------------------------------------------------------------
                                      Coef.  Std.Err.   z    P>|z| [0.025 0.975]
 -------------------------------------------------------------------------------
-Intercept                             5.658    0.184 30.780 0.000  5.297  6.018
-C(Notification_Type)[T.Rich Speech]   0.264    0.099  2.663 0.008  0.070  0.459
-C(Notification_Type)[T.Short Speech]  0.180    0.099  1.816 0.069 -0.014  0.375
-C(Asocial)[T.Interactive]             0.279    0.099  2.815 0.005  0.085  0.474
-C(Asocial)[T.Passive]                 0.273    0.099  2.754 0.006  0.079  0.468
-C(e_Task)[T.High physical]           -0.465    0.099 -4.691 0.000 -0.660 -0.271
-C(e_Task)[T.Low]                     -0.009    0.099 -0.091 0.928 -0.203  0.185
-C(CM)[T.Quiet]                        0.607    0.099  6.113 0.000  0.412  0.801
-C(CM)[T.Speech]                      -0.423    0.099 -4.267 0.000 -0.618 -0.229
-Group Var                             0.704    0.143                           
+Intercept                             5.658    0.182 31.088 0.000  5.301  6.014
+C(Notification_Type)[T.Rich Speech]   0.264    0.099  2.674 0.007  0.071  0.458
+C(Notification_Type)[T.Short Speech]  0.180    0.099  1.823 0.068 -0.013  0.374
+C(Asocial)[T.Interactive]             0.279    0.099  2.826 0.005  0.086  0.473
+C(Asocial)[T.Passive]                 0.273    0.099  2.766 0.006  0.080  0.467
+C(e_Task)[T.High physical]           -0.465    0.099 -4.711 0.000 -0.659 -0.272
+C(e_Task)[T.Low]                     -0.009    0.099 -0.091 0.927 -0.203  0.185
+C(CM)[T.Quiet]                        0.607    0.099  6.139 0.000  0.413  0.800
+C(CM)[T.Speech]                      -0.423    0.099 -4.285 0.000 -0.617 -0.230
+Group Var                             0.684    0.138                           
 ===============================================================================
+
+--- Fit Statistics for Detectability ---
+AIC:      3435.47
+R2_marg:  0.277
+R2_cond:  0.491
+----------------------------------------
 
 
 --- MODEL 4: APPROPRIATENESS ---
@@ -91,23 +109,23 @@ Testing: Which dimensions explain why people find a notification appropriate?
                          Mixed Linear Model Regression Results
 ========================================================================================
 Model:                     MixedLM          Dependent Variable:          Appropriateness
-No. Observations:          999              Method:                      REML           
-No. Groups:                37               Scale:                       1.3690         
-Min. group size:           27               Log-Likelihood:              -1636.9216     
+No. Observations:          999              Method:                      ML             
+No. Groups:                37               Scale:                       1.3593         
+Min. group size:           27               Log-Likelihood:              -1612.3905     
 Max. group size:           27               Converged:                   Yes            
 Mean group size:           27.0                                                         
 ----------------------------------------------------------------------------------------
                                               Coef.  Std.Err.   z    P>|z| [0.025 0.975]
 ----------------------------------------------------------------------------------------
-Intercept                                      0.832    1.040  0.800 0.423 -1.205  2.869
-Detectability                                  0.380    0.181  2.097 0.036  0.025  0.735
-Disruption                                     0.071    0.170  0.416 0.677 -0.262  0.404
-Detectability:Disruption                      -0.064    0.030 -2.153 0.031 -0.122 -0.006
-Social_Acceptability                           0.765    0.178  4.287 0.000  0.415  1.115
-Detectability:Social_Acceptability            -0.028    0.031 -0.921 0.357 -0.088  0.032
-Disruption:Social_Acceptability               -0.065    0.032 -2.022 0.043 -0.128 -0.002
-Detectability:Disruption:Social_Acceptability  0.009    0.005  1.574 0.116 -0.002  0.019
-Group Var                                      0.440    0.101                           
+Intercept                                      0.833    1.036  0.804 0.421 -1.197  2.863
+Detectability                                  0.380    0.181  2.105 0.035  0.026  0.734
+Disruption                                     0.071    0.169  0.417 0.677 -0.261  0.402
+Detectability:Disruption                      -0.064    0.030 -2.162 0.031 -0.122 -0.006
+Social_Acceptability                           0.765    0.178  4.301 0.000  0.416  1.113
+Detectability:Social_Acceptability            -0.028    0.030 -0.924 0.356 -0.088  0.032
+Disruption:Social_Acceptability               -0.065    0.032 -2.027 0.043 -0.128 -0.002
+Detectability:Disruption:Social_Acceptability  0.008    0.005  1.577 0.115 -0.002  0.019
+Group Var                                      0.425    0.097                           
 ========================================================================================
 
 

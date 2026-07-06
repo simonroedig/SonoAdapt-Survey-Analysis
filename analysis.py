@@ -5,6 +5,8 @@ import os
 import statsmodels.formula.api as smf
 import warnings
 warnings.filterwarnings('ignore') # Unterdrückt irrelevante Warnungen bei der Modell-Konvergenz
+import numpy as np
+
 
 # Configure fonts to properly render emojis (falling back to Segoe UI Emoji on Windows)
 plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu Sans']
@@ -124,6 +126,29 @@ RELATIONSHIPS = [
 # ==========================================
 # FUNCTIONS
 # ==========================================
+
+
+# AIC (Akaike Information Criterion)
+# $R^2_{marg}$ (Marginal R-squared)
+# $R^2_{cond}$ (Conditional R-squared)
+def print_model_fit_stats(res, model_name):
+    # 1. AIC auslesen
+    aic = res.aic
+    
+    # 2. Nakagawa's R-squared für Mixed Models berechnen
+    var_f = np.var(res.fittedvalues)           # Varianz der Fixed Effects
+    var_r = float(res.cov_re.iloc[0, 0])       # Varianz des Random Effects (Teilnehmer)
+    var_e = res.scale                          # Residual-Varianz (Restfehler)
+    
+    r2_marg = var_f / (var_f + var_r + var_e)
+    r2_cond = (var_f + var_r) / (var_f + var_r + var_e)
+    
+    print(f"--- Fit Statistics for {model_name} ---")
+    print(f"AIC:      {aic:.2f}")
+    print(f"R2_marg:  {r2_marg:.3f}")
+    print(f"R2_cond:  {r2_cond:.3f}")
+    print("-" * 40 + "\n")
+
 
 def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_date=END_DATE, remove_outliers=REMOVE_OUTLIERS):
     print("Loading data...")
@@ -289,8 +314,9 @@ def run_lmm_analysis(long_df):
     formula_disrupt = "Disruption ~ C(Notification_Type) + C(Asocial) + C(e_Task) + C(CM)"
     model_disrupt = smf.mixedlm(formula_disrupt, data=model_data, groups=model_data["ResponseId"])
     try:
-        res_disrupt = model_disrupt.fit()
+        res_disrupt = model_disrupt.fit(reml=False)
         print(res_disrupt.summary())
+        print_model_fit_stats(res_disrupt, "Disruption")
     except Exception as e:
         print(f"Model failed to fit: {e}")
 
@@ -299,8 +325,9 @@ def run_lmm_analysis(long_df):
     formula_social = "Social_Acceptability ~ C(Notification_Type) + C(Asocial) + C(e_Task) + C(CM)"
     model_social = smf.mixedlm(formula_social, data=model_data, groups=model_data["ResponseId"])
     try:
-        res_social = model_social.fit()
+        res_social = model_social.fit(reml=False)
         print(res_social.summary())
+        print_model_fit_stats(res_social, "Social Acceptability")
     except Exception as e:
          print(f"Model failed to fit: {e}")
 
@@ -309,8 +336,9 @@ def run_lmm_analysis(long_df):
     formula_detect = "Detectability ~ C(Notification_Type) + C(Asocial) + C(e_Task) + C(CM)"
     model_detect = smf.mixedlm(formula_detect, data=model_data, groups=model_data["ResponseId"])
     try:
-        res_detect = model_detect.fit()
+        res_detect = model_detect.fit(reml=False)
         print(res_detect.summary())
+        print_model_fit_stats(res_detect, "Detectability")
     except Exception as e:
          print(f"Model failed to fit: {e}")
 
@@ -321,7 +349,7 @@ def run_lmm_analysis(long_df):
     formula_approp = "Appropriateness ~ Detectability * Disruption * Social_Acceptability"
     model_approp = smf.mixedlm(formula_approp, data=model_data, groups=model_data["ResponseId"])
     try:
-        res_approp = model_approp.fit()
+        res_approp = model_approp.fit(reml=False)
         print(res_approp.summary())
     except Exception as e:
          print(f"Model failed to fit: {e}")
