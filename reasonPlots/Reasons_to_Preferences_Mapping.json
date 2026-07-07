@@ -1,0 +1,632 @@
+{
+    "Scenario_1_-_Home_Alone_Computer": {
+        "Acoustic": {
+            "Immediate": {
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 5
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 6
+            },
+            "Delayed": {
+                "Earcon (V1)": 10,
+                "None / No Audio": 3,
+                "Rich Speech (V3)": 21,
+                "Short Speech (V2)": 8
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Rich Speech (V3)": 7,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 4
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Safety": {
+            "Immediate": {},
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 1
+            }
+        }
+    },
+    "Scenario_7_-_Team_Meeting": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 7,
+                "Rich Speech (V3)": 13,
+                "Short Speech (V2)": 6
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 9,
+                "Rich Speech (V3)": 18,
+                "Short Speech (V2)": 13
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 10,
+                "None / No Audio": 2,
+                "Rich Speech (V3)": 22,
+                "Short Speech (V2)": 16
+            }
+        },
+        "Safety": {
+            "Immediate": {},
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 2
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 7,
+                "None / No Audio": 2,
+                "Rich Speech (V3)": 19,
+                "Short Speech (V2)": 16
+            }
+        }
+    },
+    "Scenario_2_-_Home_Music": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 8,
+                "Rich Speech (V3)": 13,
+                "Short Speech (V2)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 4,
+                "Rich Speech (V3)": 5,
+                "Short Speech (V2)": 3
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 9,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 2
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 16,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 8,
+                "Rich Speech (V3)": 15,
+                "Short Speech (V2)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 7,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 5,
+                "Short Speech (V2)": 5
+            }
+        },
+        "Safety": {
+            "Immediate": {
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Short Speech (V2)": 1
+            }
+        }
+    },
+    "Scenario_9_-_Tent": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 10,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 5
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 5,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 9,
+                "Short Speech (V2)": 8
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 14,
+                "Short Speech (V2)": 6
+            },
+            "Delayed": {
+                "Rich Speech (V3)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 5,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 11,
+                "Short Speech (V2)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 8
+            }
+        },
+        "Safety": {
+            "Immediate": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 2
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 6
+            }
+        }
+    },
+    "Scenario_6_-_Cycle_City": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 7,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 19,
+                "Short Speech (V2)": 7
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 7,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Rich Speech (V3)": 10,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 3
+            }
+        },
+        "Safety": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 5,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 5,
+                "Rich Speech (V3)": 20,
+                "Short Speech (V2)": 9
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 2
+            }
+        }
+    },
+    "Scenario_5_-_Grocery_Shopping": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 9,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 15,
+                "Short Speech (V2)": 3
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 5,
+                "Rich Speech (V3)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 9,
+                "Short Speech (V2)": 5
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 15,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 11,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 2,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 15,
+                "Short Speech (V2)": 4
+            }
+        },
+        "Safety": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 2
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Earcon (V1)": 4,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 1
+            }
+        }
+    },
+    "Scenario_3_-_Cooking_Dinner": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 8,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 9,
+                "Rich Speech (V3)": 12
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 2,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 7,
+                "Rich Speech (V3)": 14,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 2
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 8,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 10,
+                "Rich Speech (V3)": 13
+            }
+        },
+        "Safety": {
+            "Immediate": {
+                "Rich Speech (V3)": 6
+            },
+            "Delayed": {
+                "Earcon (V1)": 4,
+                "Rich Speech (V3)": 5
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 1
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 3
+            }
+        }
+    },
+    "Scenario_4_-_Study_Coffee_Shop": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 5,
+                "Short Speech (V2)": 6
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 6
+            },
+            "Delayed": {
+                "Earcon (V1)": 6,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 10,
+                "Short Speech (V2)": 7
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Rich Speech (V3)": 9,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 4
+            },
+            "Delayed": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 7,
+                "Short Speech (V2)": 6
+            }
+        },
+        "Safety": {
+            "Immediate": {},
+            "Delayed": {
+                "Rich Speech (V3)": 1
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Rich Speech (V3)": 1,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 1
+            }
+        }
+    },
+    "Scenario_8_-_Quiet_Friend_Over": {
+        "Acoustic": {
+            "Immediate": {
+                "Earcon (V1)": 4,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 3
+            },
+            "Delayed": {
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Focus": {
+            "Immediate": {
+                "Earcon (V1)": 3,
+                "Rich Speech (V3)": 3,
+                "Short Speech (V2)": 2
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 2,
+                "Rich Speech (V3)": 6,
+                "Short Speech (V2)": 2
+            }
+        },
+        "Info": {
+            "Immediate": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 8,
+                "Short Speech (V2)": 5
+            },
+            "Delayed": {
+                "Earcon (V1)": 1,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 2,
+                "Short Speech (V2)": 1
+            }
+        },
+        "Other": {
+            "Immediate": {
+                "Earcon (V1)": 9,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 5,
+                "Short Speech (V2)": 6
+            },
+            "Delayed": {
+                "Earcon (V1)": 5,
+                "None / No Audio": 2,
+                "Rich Speech (V3)": 11,
+                "Short Speech (V2)": 8
+            }
+        },
+        "Social": {
+            "Immediate": {
+                "Earcon (V1)": 8,
+                "None / No Audio": 1,
+                "Rich Speech (V3)": 4,
+                "Short Speech (V2)": 6
+            },
+            "Delayed": {
+                "Earcon (V1)": 5,
+                "Rich Speech (V3)": 11,
+                "Short Speech (V2)": 8
+            }
+        }
+    }
+}
