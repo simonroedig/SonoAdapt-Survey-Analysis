@@ -265,92 +265,239 @@ if 'ResponseId' in df.columns:
 st.sidebar.success(f"**{len(df)}** participants matching criteria.")
 
 # --- Export/Log Statistics ---
+import json
+
 try:
-    with open("appDataLogs.txt", "w", encoding="utf-8") as log_file:
-        log_file.write(f"=== Study Statistics ===\n")
-        log_file.write(f"Total Participants (N) = {len(df)}\n\n")
+    log_data = {
+        "study_statistics": {
+            "total_participants": len(df)
+        }
+    }
+    
+    if 'Age' in df.columns:
+        ages = pd.to_numeric(df['Age'], errors='coerce').dropna()
+        log_data["age"] = {
+            "n": len(ages),
+            "mean": round(ages.mean(), 2) if len(ages) > 0 else None,
+            "sd": round(ages.std(), 2) if len(ages) > 1 else None,
+            "min": int(ages.min()) if len(ages) > 0 else None,
+            "max": int(ages.max()) if len(ages) > 0 else None
+        }
+
+    if 'Gender' in df.columns:
+        genders = df['Gender'].dropna()
+        total_genders = len(genders)
+        log_data["gender"] = {
+            "n": total_genders,
+            "breakdown": {}
+        }
+        if total_genders > 0:
+            for val, count in genders.value_counts().items():
+                log_data["gender"]["breakdown"][val] = {
+                    "n": int(count),
+                    "percentage": round((count / total_genders) * 100, 1)
+                }
+
+    if 'English Skill_1' in df.columns:
+        english = df['English Skill_1'].dropna()
+        total_english = len(english)
+        log_data["english_proficiency"] = {
+            "n": total_english,
+            "breakdown": {}
+        }
+        if total_english > 0:
+            eng_counts = english.value_counts()
+            for level in SCALE_ENGLISH:
+                if level in eng_counts:
+                    count = eng_counts[level]
+                    log_data["english_proficiency"]["breakdown"][level] = {
+                        "n": int(count),
+                        "percentage": round((count / total_english) * 100, 1)
+                    }
+            for val, count in eng_counts.items():
+                if val not in SCALE_ENGLISH:
+                    log_data["english_proficiency"]["breakdown"][val] = {
+                        "n": int(count),
+                        "percentage": round((count / total_english) * 100, 1)
+                    }
+
+    if 'Glass Experience_1' in df.columns:
+        glass_exp = df['Glass Experience_1'].dropna()
+        total_glass = len(glass_exp)
+        log_data["smart_glass_experience"] = {
+            "n": total_glass,
+            "breakdown": {}
+        }
+        if total_glass > 0:
+            for val, count in glass_exp.value_counts().items():
+                log_data["smart_glass_experience"]["breakdown"][val] = {
+                    "n": int(count),
+                    "percentage": round((count / total_glass) * 100, 1)
+                }
+
+    if 'Which Notif Auditory' in df.columns:
+        auditory_apps = df['Which Notif Auditory'].dropna()
+        total_auditory = len(auditory_apps)
+        log_data["desired_apps_for_auditory_notifications"] = {
+            "n_participants": total_auditory,
+            "breakdown": {}
+        }
+        if total_auditory > 0:
+            app_counts = {}
+            for val in auditory_apps:
+                items = re.split(r',(?!\s)', str(val))
+                for item in items:
+                    clean_item = item.strip()
+                    if clean_item:
+                        app_counts[clean_item] = app_counts.get(clean_item, 0) + 1
+            for app_name, count in sorted(app_counts.items(), key=lambda x: x[1], reverse=True):
+                log_data["desired_apps_for_auditory_notifications"]["breakdown"][app_name] = {
+                    "n": int(count),
+                    "percentage": round((count / total_auditory) * 100, 1)
+                }
+
+    for col, key_name in [('Notif ImprtancUrgent_1', 'only_notify_important'), 
+                          ('Notif ImprtancUrgent_2', 'only_notify_urgent')]:
+        if col in df.columns:
+            series = df[col].dropna()
+            total = len(series)
+            log_data[key_name] = {
+                "n": total,
+                "breakdown": {}
+            }
+            if total > 0:
+                counts = series.value_counts()
+                for level in SCALE_AGREE:
+                    if level in counts:
+                        c = counts[level]
+                        log_data[key_name]["breakdown"][level] = {
+                            "n": int(c),
+                            "percentage": round((c / total) * 100, 1)
+                        }
+                for val, c in counts.items():
+                    if val not in SCALE_AGREE:
+                        log_data[key_name]["breakdown"][val] = {
+                            "n": int(c),
+                            "percentage": round((c / total) * 100, 1)
+                        }
+
+    if 'Preference' in df.columns:
+        pref = df['Preference'].dropna()
+        total_pref = len(pref)
+        log_data["general_notification_preference"] = {
+            "n": total_pref,
+            "breakdown": {},
+            "reasons": {}
+        }
+        if total_pref > 0:
+            for val, count in pref.value_counts().items():
+                log_data["general_notification_preference"]["breakdown"][val] = {
+                    "n": int(count),
+                    "percentage": round((count / total_pref) * 100, 1)
+                }
         
-        if 'Age' in df.columns:
-            ages = pd.to_numeric(df['Age'], errors='coerce').dropna()
-            log_file.write(f"--- Age ---\n")
-            log_file.write(f"N = {len(ages)}\n")
-            log_file.write(f"Mean (M) = {ages.mean():.2f}\n")
-            log_file.write(f"Standard deviation (SD) = {ages.std():.2f}\n")
-            log_file.write(f"Range = {ages.min()} - {ages.max()}\n\n")
+        if 'Preference Text' in df.columns:
+            pref_df = df[['Preference', 'Preference Text']].dropna(subset=['Preference Text'])
+            pref_df = pref_df[pref_df['Preference Text'].astype(str).str.strip() != ""]
+            for p_val in pref_df['Preference'].unique():
+                subset = pref_df[pref_df['Preference'] == p_val]
+                log_data["general_notification_preference"]["reasons"][p_val] = [str(text).strip() for text in subset['Preference Text']]
 
-        if 'Gender' in df.columns:
-            genders = df['Gender'].dropna()
-            total_genders = len(genders)
-            log_file.write(f"--- Gender ---\n")
-            log_file.write(f"N = {total_genders}\n")
-            if total_genders > 0:
-                for val, count in genders.value_counts().items():
-                    log_file.write(f"{val}: n={count} ({(count/total_genders)*100:.1f}%)\n")
-            log_file.write("\n")
+    for col, key_name in [('Speech Opinion_1', 'assumption_speech_means_urgent'), 
+                          ('Speech Opinion_2', 'acceptable_read_loud_unprompted')]:
+        if col in df.columns:
+            series = df[col].dropna()
+            total = len(series)
+            log_data[key_name] = {
+                "n": total,
+                "breakdown": {}
+            }
+            if total > 0:
+                counts = series.value_counts()
+                for level in SCALE_AGREE:
+                    if level in counts:
+                        c = counts[level]
+                        log_data[key_name]["breakdown"][level] = {
+                            "n": int(c),
+                            "percentage": round((c / total) * 100, 1)
+                        }
+                for val, c in counts.items():
+                    if val not in SCALE_AGREE:
+                        log_data[key_name]["breakdown"][val] = {
+                            "n": int(c),
+                            "percentage": round((c / total) * 100, 1)
+                        }
 
-        if 'English Skill_1' in df.columns:
-            english = df['English Skill_1'].dropna()
-            total_english = len(english)
-            log_file.write(f"--- English Proficiency ---\n")
-            log_file.write(f"N = {total_english}\n")
-            if total_english > 0:
-                eng_counts = english.value_counts()
-                for level in SCALE_ENGLISH:
-                    if level in eng_counts:
-                        count = eng_counts[level]
-                        log_file.write(f"{level}: n={count} ({(count/total_english)*100:.1f}%)\n")
-                for val, count in eng_counts.items():
-                    if val not in SCALE_ENGLISH:
-                        log_file.write(f"{val}: n={count} ({(count/total_english)*100:.1f}%)\n")
-            log_file.write("\n")
+    if 'Speech Opinion 2' in df.columns:
+        factors = df['Speech Opinion 2'].dropna()
+        total_factors = len(factors)
+        log_data["factors_influencing_speech_attitude"] = {
+            "n_participants": total_factors,
+            "breakdown": {}
+        }
+        if total_factors > 0:
+            fact_counts = {}
+            for val in factors:
+                items = re.split(r',(?!\s)', str(val))
+                for item in items:
+                    clean_item = item.strip()
+                    if clean_item:
+                        fact_counts[clean_item] = fact_counts.get(clean_item, 0) + 1
+            for f_name, count in sorted(fact_counts.items(), key=lambda x: x[1], reverse=True):
+                log_data["factors_influencing_speech_attitude"]["breakdown"][f_name] = {
+                    "n": int(count),
+                    "percentage": round((count / total_factors) * 100, 1)
+                }
 
-        if 'Glass Experience_1' in df.columns:
-            glass_exp = df['Glass Experience_1'].dropna()
-            total_glass = len(glass_exp)
-            log_file.write(f"--- Smart Glass Experience ---\n")
-            log_file.write(f"N = {total_glass}\n")
-            if total_glass > 0:
-                for val, count in glass_exp.value_counts().items():
-                    log_file.write(f"{val}: n={count} ({(count/total_glass)*100:.1f}%)\n")
-            log_file.write("\n")
+    if 'Maximum Length' in df.columns:
+        max_len = df['Maximum Length'].dropna()
+        total_max = len(max_len)
+        log_data["maximum_acceptable_length"] = {
+            "n_participants": total_max,
+            "breakdown": {}
+        }
+        if total_max > 0:
+            len_counts = {}
+            for val in max_len:
+                items = re.split(r',(?!\s)', str(val))
+                for item in items:
+                    clean_item = item.strip()
+                    if clean_item:
+                        len_counts[clean_item] = len_counts.get(clean_item, 0) + 1
+            for l_name, count in sorted(len_counts.items(), key=lambda x: x[1], reverse=True):
+                log_data["maximum_acceptable_length"]["breakdown"][l_name] = {
+                    "n": int(count),
+                    "percentage": round((count / total_max) * 100, 1)
+                }
 
-        if 'Which Notif Auditory' in df.columns:
-            auditory_apps = df['Which Notif Auditory'].dropna()
-            total_auditory = len(auditory_apps)
-            log_file.write(f"--- Desired Apps for Auditory Notifications ---\n")
-            log_file.write(f"N = {total_auditory} participants\n")
-            if total_auditory > 0:
-                app_counts = {}
-                for val in auditory_apps:
-                    items = re.split(r',(?!\s)', str(val))
-                    for item in items:
-                        clean_item = item.strip()
-                        if clean_item:
-                            app_counts[clean_item] = app_counts.get(clean_item, 0) + 1
-                for app_name, count in sorted(app_counts.items(), key=lambda x: x[1], reverse=True):
-                    log_file.write(f"{app_name}: n={count} ({(count/total_auditory)*100:.1f}%)\n")
-            log_file.write("\n")
+    if 'Summary Acceptance_1' in df.columns:
+        series = df['Summary Acceptance_1'].dropna()
+        total = len(series)
+        log_data["acceptance_ai_summarization"] = {
+            "n": total,
+            "breakdown": {}
+        }
+        if total > 0:
+            counts = series.value_counts()
+            for level in SCALE_AGREE:
+                if level in counts:
+                    c = counts[level]
+                    log_data["acceptance_ai_summarization"]["breakdown"][level] = {
+                        "n": int(c),
+                        "percentage": round((c / total) * 100, 1)
+                    }
+            for val, c in counts.items():
+                if val not in SCALE_AGREE:
+                    log_data["acceptance_ai_summarization"]["breakdown"][val] = {
+                        "n": int(c),
+                        "percentage": round((c / total) * 100, 1)
+                    }
 
-        for col, title in [('Notif ImprtancUrgent_1', 'Only notify me for IMPORTANT messages'), 
-                           ('Notif ImprtancUrgent_2', 'Only notify me for URGENT messages')]:
-            if col in df.columns:
-                series = df[col].dropna()
-                total = len(series)
-                log_file.write(f"--- {title} ---\n")
-                log_file.write(f"N = {total}\n")
-                if total > 0:
-                    counts = series.value_counts()
-                    for level in SCALE_AGREE:
-                        if level in counts:
-                            c = counts[level]
-                            log_file.write(f"{level}: n={c} ({(c/total)*100:.1f}%)\n")
-                    for val, c in counts.items():
-                        if val not in SCALE_AGREE:
-                            log_file.write(f"{val}: n={c} ({(c/total)*100:.1f}%)\n")
-                log_file.write("\n")
+    with open("appDataLogs.json", "w", encoding="utf-8") as log_file:
+        json.dump(log_data, log_file, indent=4, ensure_ascii=False)
 
 except Exception as e:
-    st.sidebar.error(f"Error writing to appDataLogs.txt: {e}")
+    st.sidebar.error(f"Error writing to appDataLogs.json: {e}")
 
 
 # --- Dashboard Tabs ---

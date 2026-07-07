@@ -22,6 +22,7 @@ OUTPUT_DIR = "furtherPlots2"
 # FUNCTIONS
 # ==========================================
 
+
 def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_date=END_DATE, remove_outliers=REMOVE_OUTLIERS):
     print("Loading data...")
     df = pd.read_excel(data_path)
