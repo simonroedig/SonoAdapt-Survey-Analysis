@@ -6,6 +6,7 @@ import statsmodels.formula.api as smf
 import warnings
 warnings.filterwarnings('ignore') # Unterdrückt irrelevante Warnungen bei der Modell-Konvergenz
 import numpy as np
+import pingouin as pg
 
 
 # Configure fonts to properly render emojis (falling back to Segoe UI Emoji on Windows)
@@ -297,6 +298,34 @@ def calculate_descriptives(long_df):
     print("-> Descriptive statistics saved successfully to 'descriptive_statistics.csv'.")
     return desc_stats
 
+
+
+def run_dominance_analysis(long_df):
+    print("\n" + "="*50)
+    print("RELATIVE IMPORTANCE ANALYSIS (DOMINANCE)")
+    print("="*50)
+    
+    # 1. Filter out missing data
+    df_clean = long_df.dropna(subset=['Appropriateness', 'Social_Acceptability', 'Detectability', 'Disruption'])
+    
+    # 2. Define predictors (X) and target (y)
+    X = df_clean[['Social_Acceptability', 'Detectability', 'Disruption']]
+    y = df_clean['Appropriateness']
+    
+    # 3. Run regression with relimp=True
+    lm = pg.linear_regression(X, y, relimp=True)
+    
+    # 4. Extract and format the Relative Importance
+    relimp_df = lm[['names', 'relimp']].iloc[1:].copy() # Skip the Intercept
+    
+    # Normalize so they sum to exactly 1.0 (100% of the explained variance)
+    total_relimp = relimp_df['relimp'].sum()
+    relimp_df['Normalized_Weight'] = (relimp_df['relimp'] / total_relimp).round(3)
+    relimp_df['Percentage'] = (relimp_df['Normalized_Weight'] * 100).round(1).astype(str) + '%'
+    
+    print(relimp_df[['names', 'Normalized_Weight', 'Percentage']].to_string(index=False))
+
+
 def run_lmm_analysis(long_df):
     print("\n" + "="*50)
     print("RUNNING LINEAR MIXED MODELS (LMM)")
@@ -374,6 +403,9 @@ def main():
 
     # 3. Linear Mixed Models
     run_lmm_analysis(long_df)
+
+    # 4. Run Dominance Analysis
+    run_dominance_analysis(long_df)
 
     # Final summary printout
     print("\n" + "="*50)

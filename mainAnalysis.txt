@@ -130,6 +130,14 @@ Group Var                                      0.425    0.097
 
 
 ==================================================
+RELATIVE IMPORTANCE ANALYSIS (DOMINANCE)
+==================================================
+               names  Normalized_Weight Percentage
+Social_Acceptability              0.527      52.7%
+       Detectability              0.021       2.1%
+          Disruption              0.451      45.1%
+
+==================================================
 DATA PROCESSING SUMMARY
 ==================================================
 Raw responses loaded:                      76
