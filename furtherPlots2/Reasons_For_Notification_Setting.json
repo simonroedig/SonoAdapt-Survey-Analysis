@@ -1,0 +1,32 @@
+[
+    {
+        "Reason":"Personal Focus: To avoid distracting myself or breaking my concentration.",
+        "Count":26,
+        "Percentage_of_Participants":"70.3%"
+    },
+    {
+        "Reason":"Social Etiquette: To avoid disturbing or annoying people around me.",
+        "Count":20,
+        "Percentage_of_Participants":"54.1%"
+    },
+    {
+        "Reason":"Awareness: To ensure I don't miss any messages",
+        "Count":11,
+        "Percentage_of_Participants":"29.7%"
+    },
+    {
+        "Reason":"Habit: It's just my default setting \/ I never bothered to change it.",
+        "Count":6,
+        "Percentage_of_Participants":"16.2%"
+    },
+    {
+        "Reason":"Privacy: So people around me don't know when I receive a message.",
+        "Count":6,
+        "Percentage_of_Participants":"16.2%"
+    },
+    {
+        "Reason":"Other:",
+        "Count":2,
+        "Percentage_of_Participants":"5.4%"
+    }
+]

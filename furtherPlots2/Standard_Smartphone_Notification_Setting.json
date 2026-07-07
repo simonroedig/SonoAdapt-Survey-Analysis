@@ -1,0 +1,27 @@
+[
+    {
+        "My Notif Settings":"Visual and Vibration",
+        "Count":13,
+        "Percentage":"35.1%"
+    },
+    {
+        "My Notif Settings":"Visual only",
+        "Count":11,
+        "Percentage":"29.7%"
+    },
+    {
+        "My Notif Settings":"No notification at all",
+        "Count":9,
+        "Percentage":"24.3%"
+    },
+    {
+        "My Notif Settings":"Visual and Audio",
+        "Count":3,
+        "Percentage":"8.1%"
+    },
+    {
+        "My Notif Settings":"Visual, Vibration, and Audio",
+        "Count":1,
+        "Percentage":"2.7%"
+    }
+]

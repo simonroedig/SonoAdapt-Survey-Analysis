@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import re
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -25,12 +26,12 @@ def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_da
     print("Loading data...")
     df = pd.read_excel(data_path)
     
-    # Clean column names (remove non-breaking spaces) to match your Streamlit logic perfectly
+    # Clean column names (remove non-breaking spaces)
     df.columns = [str(c).replace('\xa0', ' ').strip() for c in df.columns]
     
     raw_count = len(df)
     
-    # Filter by Date (this also implicitly removes the Qualtrics metadata rows at index 0 and 1)
+    # Filter by Date
     df['RecordedDate'] = pd.to_datetime(df['RecordedDate'], errors='coerce', format='mixed')
     if start_date: df = df[df['RecordedDate'] >= pd.to_datetime(start_date)]
     if end_date: df = df[df['RecordedDate'] <= pd.to_datetime(end_date)]
@@ -52,56 +53,47 @@ def load_and_filter_data(data_path, outliers_path, start_date=START_DATE, end_da
 
 def plot_notification_settings(df):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
     col_name = 'My Notif Settings'
+    base_filename = "Standard_Smartphone_Notification_Setting"
     
-    # Ensure column exists
     if col_name not in df.columns:
         print(f"\n❌ Error: Column '{col_name}' not found in the dataset.")
         return
         
-    # Drop empty responses for this specific question
     plot_df = df.dropna(subset=[col_name]).copy()
     
     # Shorten labels by removing text in parentheses
     plot_df[col_name] = plot_df[col_name].astype(str).apply(lambda x: x.split('(')[0].strip())
     
-    # Count frequencies
     counts = plot_df[col_name].value_counts().reset_index()
     counts.columns = [col_name, 'Count']
     
-    if counts.empty:
-        print(f"\n❌ No valid data found in column '{col_name}'.")
-        return
+    if counts.empty: return
+
+    # Calculate percentages for the JSON export
+    total_participants = counts['Count'].sum()
+    counts['Percentage'] = (counts['Count'] / total_participants * 100).round(1).astype(str) + '%'
+
+    # Save data to JSON
+    json_path = os.path.join(OUTPUT_DIR, f"{base_filename}.json")
+    counts.to_json(json_path, orient='records', indent=4)
 
     print("\nGenerating plot for Standard Smartphone Notification Settings...")
     
-    # Set up the plot
     plt.figure(figsize=(10, 6))
     sns.set_theme(style="whitegrid")
     
-    # Define a custom color map to visually group categories
     color_map = {
-        'Visual only': '#6baed6',                  # Light blue (visual approach)
-        'Visual and Vibration': '#2171b5',         # Dark blue (visual approach)
-        'Visual and Audio': '#fd8d3c',             # Light orange (audio involved)
-        'Visual, Vibration, and Audio': '#d94801', # Dark orange (audio involved)
-        'No notification at all': '#969696'        # Grey (different)
+        'Visual only': '#6baed6',                  
+        'Visual and Vibration': '#2171b5',         
+        'Visual and Audio': '#fd8d3c',             
+        'Visual, Vibration, and Audio': '#d94801', 
+        'No notification at all': '#969696'        
     }
-    
-    # Map colors to the categories in the order they appear in 'counts'
     colors = [color_map.get(label, '#cccccc') for label in counts[col_name]]
     
-    # Create horizontal bar plot (horizontal is best for long text answers)
-    ax = sns.barplot(
-        data=counts, 
-        x='Count', 
-        y=col_name, 
-        palette=colors
-    )
+    ax = sns.barplot(data=counts, x='Count', y=col_name, palette=colors)
     
-    # Add count and percentage labels to the end of each bar
-    total_participants = counts['Count'].sum()
     for p in ax.patches:
         width = p.get_width()
         if width > 0:
@@ -109,31 +101,89 @@ def plot_notification_settings(df):
             ax.annotate(
                 f'{int(width)} ({percentage})',
                 (width, p.get_y() + p.get_height() / 2),
-                ha='left', va='center',
-                xytext=(8, 0), # 8 points offset to the right
-                textcoords='offset points',
-                fontsize=11,
-                fontweight='bold',
-                color='#333333'
+                ha='left', va='center', xytext=(8, 0), textcoords='offset points',
+                fontsize=11, fontweight='bold', color='#333333'
             )
             
-    # Styling
     plt.title("Standard Smartphone Notification Setting", fontsize=16, pad=20, fontweight='bold')
     plt.xlabel("Number of Participants", fontsize=12, labelpad=10)
-    plt.ylabel("") # Left empty since categories explain themselves
+    plt.ylabel("") 
     
-    # Extend x-axis limit by 15% to make room for the text annotations
-    max_count = counts['Count'].max()
-    plt.xlim(0, max_count * 1.15)
-    
+    plt.xlim(0, counts['Count'].max() * 1.15)
     plt.tight_layout()
     
-    # Save the plot
-    filename = os.path.join(OUTPUT_DIR, "Standard_Smartphone_Notification_Setting.png")
-    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    img_path = os.path.join(OUTPUT_DIR, f"{base_filename}.png")
+    plt.savefig(img_path, dpi=300, bbox_inches='tight')
     plt.close()
+    print(f"✅ Plot saved to: {img_path}")
+    print(f"✅ Data saved to: {json_path}")
+
+def plot_notification_reasons(df):
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    col_name = 'My Notif SettingsWhy'
+    base_filename = "Reasons_For_Notification_Setting"
     
-    print(f"✅ Plot successfully saved to: {filename}")
+    if col_name not in df.columns:
+        print(f"\n❌ Error: Column '{col_name}' not found in the dataset.")
+        return
+        
+    plot_df = df.dropna(subset=[col_name]).copy()
+    total_participants = len(plot_df) 
+    
+    if total_participants == 0: return
+
+    # Flatten the comma-separated multiple choice answers
+    all_responses = []
+    for val in plot_df[col_name]:
+        # Split by comma ONLY if it's NOT followed by a space
+        items = re.split(r',(?!\s)', str(val))
+        
+        for item in items:
+            clean_item = item.split('(')[0].strip() # Clean up and remove parentheses
+            if clean_item:
+                all_responses.append(clean_item)
+                
+    # Count frequencies of each reason
+    counts = pd.Series(all_responses).value_counts().reset_index()
+    counts.columns = ['Reason', 'Count']
+
+    # Calculate percentages for the JSON export
+    counts['Percentage_of_Participants'] = (counts['Count'] / total_participants * 100).round(1).astype(str) + '%'
+
+    # Save data to JSON
+    json_path = os.path.join(OUTPUT_DIR, f"{base_filename}.json")
+    counts.to_json(json_path, orient='records', indent=4)
+
+    print("\nGenerating plot for Reasons for Chosen Setting...")
+    
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="whitegrid")
+    
+    ax = sns.barplot(data=counts, x='Count', y='Reason', palette="flare")
+    
+    for p in ax.patches:
+        width = p.get_width()
+        if width > 0:
+            percentage = f"{100 * width / total_participants:.1f}%"
+            ax.annotate(
+                f'{int(width)} ({percentage})',
+                (width, p.get_y() + p.get_height() / 2),
+                ha='left', va='center', xytext=(8, 0), textcoords='offset points',
+                fontsize=11, fontweight='bold', color='#333333'
+            )
+            
+    plt.title("Reasons for Chosen Smartphone Notification Setting", fontsize=16, pad=20, fontweight='bold')
+    plt.xlabel(f"Number of Participants (n={total_participants})", fontsize=12, labelpad=10)
+    plt.ylabel("") 
+    
+    plt.xlim(0, counts['Count'].max() * 1.25)
+    plt.tight_layout()
+    
+    img_path = os.path.join(OUTPUT_DIR, f"{base_filename}.png")
+    plt.savefig(img_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"✅ Plot saved to: {img_path}")
+    print(f"✅ Data saved to: {json_path}")
 
 def main():
     data_file = 'data.xlsx'
@@ -142,8 +192,9 @@ def main():
     # 1. Load Data
     df = load_and_filter_data(data_file, outliers_file)
     
-    # 2. Generate Plot
+    # 2. Generate Plots & JSONs
     plot_notification_settings(df)
+    plot_notification_reasons(df)
     
     print("\n" + "="*50)
     print("SCRIPT FINISHED")
