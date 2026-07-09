@@ -106,27 +106,23 @@ R2_cond:  0.491
 
 --- MODEL 4: APPROPRIATENESS ---
 Testing: Which dimensions explain why people find a notification appropriate?
-                         Mixed Linear Model Regression Results
-========================================================================================
-Model:                     MixedLM          Dependent Variable:          Appropriateness
-No. Observations:          999              Method:                      ML             
-No. Groups:                37               Scale:                       1.3593         
-Min. group size:           27               Log-Likelihood:              -1612.3905     
-Max. group size:           27               Converged:                   Yes            
-Mean group size:           27.0                                                         
-----------------------------------------------------------------------------------------
-                                              Coef.  Std.Err.   z    P>|z| [0.025 0.975]
-----------------------------------------------------------------------------------------
-Intercept                                      0.833    1.036  0.804 0.421 -1.197  2.863
-Detectability                                  0.380    0.181  2.105 0.035  0.026  0.734
-Disruption                                     0.071    0.169  0.417 0.677 -0.261  0.402
-Detectability:Disruption                      -0.064    0.030 -2.162 0.031 -0.122 -0.006
-Social_Acceptability                           0.765    0.178  4.301 0.000  0.416  1.113
-Detectability:Social_Acceptability            -0.028    0.030 -0.924 0.356 -0.088  0.032
-Disruption:Social_Acceptability               -0.065    0.032 -2.027 0.043 -0.128 -0.002
-Detectability:Disruption:Social_Acceptability  0.008    0.005  1.577 0.115 -0.002  0.019
-Group Var                                      0.425    0.097                           
-========================================================================================
+             Mixed Linear Model Regression Results
+================================================================
+Model:             MixedLM  Dependent Variable:  Appropriateness
+No. Observations:  999      Method:              ML             
+No. Groups:        37       Scale:               1.3790         
+Min. group size:   27       Log-Likelihood:      -1619.6066     
+Max. group size:   27       Converged:           Yes            
+Mean group size:   27.0                                         
+----------------------------------------------------------------
+                     Coef.  Std.Err.    z    P>|z| [0.025 0.975]
+----------------------------------------------------------------
+Intercept             2.758    0.271  10.178 0.000  2.227  3.289
+Detectability         0.118    0.027   4.345 0.000  0.065  0.171
+Disruption           -0.375    0.024 -15.335 0.000 -0.423 -0.327
+Social_Acceptability  0.526    0.026  20.457 0.000  0.476  0.577
+Group Var             0.432    0.098                            
+================================================================
 
 
 ==================================================

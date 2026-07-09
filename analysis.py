@@ -375,7 +375,7 @@ def run_lmm_analysis(long_df):
     print("\n--- MODEL 4: APPROPRIATENESS ---")
     print("Testing: Which dimensions explain why people find a notification appropriate?")
     # Continuous predictors do not need C()
-    formula_approp = "Appropriateness ~ Detectability * Disruption * Social_Acceptability"
+    formula_approp = "Appropriateness ~ Detectability + Disruption + Social_Acceptability"
     model_approp = smf.mixedlm(formula_approp, data=model_data, groups=model_data["ResponseId"])
     try:
         res_approp = model_approp.fit(reml=False)
