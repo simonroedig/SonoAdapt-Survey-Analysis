@@ -160,7 +160,7 @@ def main():
     # Generate the plot
     plot_pie_chart(
         aggregated_timing, 
-        "Overall Timing Preference\n(Independent of Context)", 
+        "Overall Timing Preference\n(Aggregated across all 9 scenarios)", 
         "02_Overall_Timing_Preference.png"
     )
 
