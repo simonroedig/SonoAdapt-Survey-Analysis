@@ -12,6 +12,10 @@ OUTLIERS_FILE = "listOfManuallyIdentifiedOutliers.txt"
 OUTPUT_DIR = "variancePlots"
 START_DATE = "2026-06-30"
 
+# !!! IMPORTANT !!!
+# Change this to match the exact column suffix in your Excel file for the timing question
+TIMING_COLUMN_SUFFIX = ". Timing" # e.g., looks for "A. Timing", "B. Timing"
+
 # Explicitly tell Matplotlib to use the sans-serif list for all text by default
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = ['Arial', 'Segoe UI Emoji', 'Tahoma', 'DejaVu Sans']
@@ -21,20 +25,32 @@ SCENARIOS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I']
 # ==========================================
 # HELPER FUNCTIONS
 # ==========================================
-def categorize_preference(val):
-    """Maps free-text or standard Qualtrics responses to plotting categories."""
+def categorize_timing(val):
+    """Maps free-text or standard Qualtrics timing responses to plotting categories."""
     if pd.isna(val): 
         return None
     val_str = str(val).lower()
     
-    if 'none' in val_str or 'no audio' in val_str or 'mute' in val_str:
-        return 'No Audio'
-    elif '1' in val_str or 'earcon' in val_str or 'sound' in val_str:
-        return 'Version 1'
-    elif '2' in val_str:
-        return 'Version 2'
-    elif '3' in val_str:
-        return 'Version 3'
+    # 1. Immediate
+    if 'immediate' in val_str or 'right away' in val_str:
+        return 'Immediate'
+        
+    # 2. Micro-Break
+    elif 'pause' in val_str or 'brief' in val_str or 'between picking' in val_str or 'look up' in val_str:
+        return 'Micro-Break'
+        
+    # 3. Subtask Break
+    elif 'current task' in val_str or 'segment' in val_str or 'part of' in val_str or 'stopping point' in val_str or 'collected all' in val_str or 'current topic' in val_str:
+        return 'Subtask Break'
+        
+    # 4. After Task
+    elif 'later' in val_str or 'done' in val_str or 'finished' in val_str or 'over' in val_str:
+        return 'After Task'
+        
+    # Generic delay catch-all if they just picked "Delayed"
+    elif 'delay' in val_str:
+        return 'Delayed (General)'
+        
     return 'Other'
 
 # ==========================================
@@ -70,20 +86,24 @@ def main():
     print(f"Total valid participants to analyze: {len(df)}")
 
     # 5. Extract and process scenario choices
-    pref_cols = [f"{sc}. Overall" for sc in SCENARIOS if f"{sc}. Overall" in df.columns]
+    pref_cols = [f"{sc}{TIMING_COLUMN_SUFFIX}" for sc in SCENARIOS if f"{sc}{TIMING_COLUMN_SUFFIX}" in df.columns]
     
+    if not pref_cols:
+        print(f"Error: Could not find any columns ending with '{TIMING_COLUMN_SUFFIX}'. Please check your Excel column headers.")
+        return
+
     # Create a clean subset dataframe of just their choices
     choices_df = pd.DataFrame()
     for col in pref_cols:
-        choices_df[col] = df[col].apply(categorize_preference)
+        choices_df[col] = df[col].apply(categorize_timing)
 
-    # Calculate how many unique styles each person picked across all answered scenarios
-    df['Unique_Styles_Count'] = choices_df.apply(lambda row: row.dropna().nunique(), axis=1)
+    # Calculate how many unique timing styles each person picked
+    df['Unique_Timings_Count'] = choices_df.apply(lambda row: row.dropna().nunique(), axis=1)
     
     # Calculate how many scenarios they actually answered
     df['Scenarios_Answered'] = choices_df.apply(lambda row: row.notna().sum(), axis=1)
     
-    # Only look at participants who answered at least 5 scenarios to get a fair variance
+    # Only look at participants who answered at least 5 scenarios
     valid_users = df[df['Scenarios_Answered'] >= 5]
     
     if valid_users.empty:
@@ -91,24 +111,24 @@ def main():
         return
 
     # 6. Calculate Statistics
-    counts = valid_users['Unique_Styles_Count'].value_counts().sort_index()
+    counts = valid_users['Unique_Timings_Count'].value_counts().sort_index()
     percentages = (counts / len(valid_users)) * 100
     
     one_style_users = percentages.get(1, 0)
     adaptable_users = 100 - one_style_users
 
-    print("\n--- INTRA-USER VARIANCE STATS ---")
-    print(f"Participants who used ONLY ONE style across all contexts: {one_style_users:.1f}%")
-    print(f"Participants who ADAPTED (used 2+ styles) based on context: {adaptable_users:.1f}%")
+    print("\n--- INTRA-USER TIMING VARIANCE STATS ---")
+    print(f"Participants who used ONLY ONE timing across all contexts: {one_style_users:.1f}%")
+    print(f"Participants who ADAPTED timing (used 2+ timings) based on context: {adaptable_users:.1f}%")
     for k, v in counts.items():
-        print(f" - Used exactly {k} different styles: {v} participants ({percentages[k]:.1f}%)")
-    print("---------------------------------\n")
+        print(f" - Used exactly {k} different timings: {v} participants ({percentages[k]:.1f}%)")
+    print("----------------------------------------\n")
 
     # 7. Generate Visualization
     fig, ax = plt.subplots(figsize=(10, 6))
     
     # Custom colors: Emphasize that >1 is good
-    bar_colors = ['#E74C3C' if x == 1 else '#3498DB' for x in counts.index]
+    bar_colors = ['#E74C3C' if x == 1 else '#27AE60' for x in counts.index]
     
     bars = ax.bar(counts.index, percentages.values, color=bar_colors, edgecolor='black', linewidth=1.2)
     
@@ -119,23 +139,24 @@ def main():
                 ha='center', va='bottom', fontsize=12, fontweight='bold')
 
     # Formatting
-    ax.set_title("Intra-User Variance:\nDo participants stick to one favorite, or adapt to the context?", 
+    ax.set_title("Intra-User Timing Variance:\nDo participants stick to one timing, or adapt to the context?", 
                  fontsize=14, fontweight='bold', pad=15)
     
-    # --- RESTORED: Main X-axis label added back ---
-    ax.set_xlabel("Number of Unique Notification Styles Chosen\n(Earcon, Shortspeech, Richspeech, None)", fontsize=12, labelpad=15)
+    ax.set_xlabel("Number of Unique Timing Styles Chosen\n(Immediate, Micro-Break, Subtask Break, After Task, Other)", fontsize=12, labelpad=15)
     ax.set_ylabel("Percentage of Participants (%)", fontsize=12, labelpad=10)
     
-    # Custom Descriptive X-Axis Labels
-    x_labels = [
-        "1 Style\n(Static)", 
-        "2 Styles", 
-        "3 Styles", 
-        "4 Styles\n(Highly Adaptive)"
-    ]
-    ax.set_xticks(range(1, 5))
+    # Custom Descriptive X-Axis Labels dynamically based on available data
+    x_labels = []
+    for i in counts.index:
+        if i == 1:
+            x_labels.append("1 Timing\n(Static)")
+        elif i == max(counts.index):
+            x_labels.append(f"{i} Timings\n(Highly Adaptive)")
+        else:
+            x_labels.append(f"{i} Timings")
+            
+    ax.set_xticks(counts.index)
     ax.set_xticklabels(x_labels, fontsize=11)
-    # -------------------------------------------------
     
     # Limit Y-axis slightly above max value to fit the text
     ax.set_ylim(0, percentages.max() + 10)
@@ -146,13 +167,13 @@ def main():
     ax.grid(axis='y', linestyle='--', alpha=0.7)
 
     # Add a descriptive text box summarizing the finding
-    textstr = f"Finding: {adaptable_users:.1f}% of users changed\ntheir preferred notification style\nat least once based on the scenario."
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    textstr = f"Finding: {adaptable_users:.1f}% of users changed\ntheir preferred notification timing\nat least once based on the scenario."
+    props = dict(boxstyle='round', facecolor='honeydew', alpha=0.5)
     ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=11,
             verticalalignment='top', bbox=props)
 
     # Save Plot
-    output_path = os.path.join(OUTPUT_DIR, "IntraUser_Variance_BarChart.png")
+    output_path = os.path.join(OUTPUT_DIR, "IntraUser_TimingVariance_BarChart.png")
     plt.tight_layout()
     plt.savefig(output_path, dpi=300)
     plt.close()
