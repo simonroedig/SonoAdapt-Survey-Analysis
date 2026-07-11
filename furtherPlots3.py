@@ -34,6 +34,7 @@ def map_category(raw_name):
     else:
         return 'No Audio' # Fallback
 
+
 def plot_pie_chart(data_dict, title, filename):
     """
     data_dict: dict mapping raw category strings to dicts with 'n' and 'percentage'.
@@ -91,7 +92,13 @@ def plot_pie_chart(data_dict, title, filename):
     # Combine the stats for Speech
     speech_n = agg_data['Short Speech'] + agg_data['Rich Speech']
     total_n = sum(agg_data.values())
-    speech_pct = (speech_n / total_n) * 100
+    
+    # FIX: Calculate rounded individual percentages to perfectly match the pie labels
+    short_speech_pct = round((agg_data['Short Speech'] / total_n) * 100, 1)
+    rich_speech_pct = round((agg_data['Rich Speech'] / total_n) * 100, 1)
+    
+    # Add the rounded values together so the visual math adds up correctly
+    speech_pct = short_speech_pct + rich_speech_pct
     
     # Calculate position for annotation
     speech_wedges = [w for i, w in enumerate(wedges) if labels[i] in ['Short Speech', 'Rich Speech']]
@@ -148,7 +155,7 @@ def main():
         pref_data = log_data["general_notification_preference"]["breakdown"]
         plot_pie_chart(
             pref_data, 
-            "General Notification Preference\n(Independent of Context)", 
+            "Important/Urgent Notification Preference\n(Independent of Scenarios)", 
             "01_General_Preference_Pie.png"
         )
     else:
