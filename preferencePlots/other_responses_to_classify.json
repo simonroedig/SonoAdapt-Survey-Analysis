@@ -1,0 +1,230 @@
+{
+    "Scene_1_Home_Alone_Computer": [
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "A. Why Text": "need to focus on work when working",
+            "A. Why Timing Text": "need to focus on work when working"
+        },
+        {
+            "Participant_ID": "R_82PiWLNvqNB0Q5a",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "A. Why Text": "Again, being focussed I would prefer to not be notified.",
+            "A. Why Timing Text": "Same as prior (meeting, caf\u00e9)"
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "None / No Audio",
+            "Raw_Timing_Choice": "Other:",
+            "A. Why Text": "if it was urgent enough they'd call so my notifications stay off - it'd be super disruptive.",
+            "A. Why Timing Text": "see above\n"
+        }
+    ],
+    "Scene_7_Team_Meeting": [
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "B. Why Text": "it's unprofessional and distracting to get notifications during a meeting when i am supposed to be actively listening",
+            "B. Why Timing Text": "need to focus on meeting during a meeting"
+        },
+        {
+            "Participant_ID": "R_82PiWLNvqNB0Q5a",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "B. Why Text": "When I am in a work meeting, I do not want to be disturbed - if there were an emergency, I know that Lilly would call me, but a simple private message has to wait until I have some time after the meeting.",
+            "B. Why Timing Text": "After the meeting is over and I have maybe done some short follow-up tasks and have a little time to sit down and check my phone, I would prefer a brief reminder that I do have some new messages. Generally, in this context I think that I would not even need a notification via the smart glasses because I would see the pop up on my phone screen."
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "B. Why Text": "I dont want to be interrupted by this kind of message",
+            "B. Why Timing Text": "I dont want to be interrupted by this kind of message"
+        },
+        {
+            "Participant_ID": "R_8mXGSIvo1Rmwtal",
+            "Resolved_Version": "None / No Audio",
+            "Raw_Timing_Choice": "Other:",
+            "B. Why Text": "Even with nobody knowing I get a text, it still feels disruptive to the thing I am doing. I do not need to multitask everywhere, especially in social settings.",
+            "B. Why Timing Text": "I see no reasoning for audio messages in general."
+        }
+    ],
+    "Scene_2_Home_Music": [
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "None / No Audio",
+            "Raw_Timing_Choice": "Other:",
+            "C. Why Text": "if there's really an urgent and important scenario, the friend/family can call me instead of dropping a message. i don't like being held hostage to message notifications on my phone",
+            "C. Why Timing Text": "we don't need to be slaves to our phones. i think you need to stop doing needless research that encourages that behaviour."
+        },
+        {
+            "Participant_ID": "R_8Fa2s5gQHqby1xu",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "When I switch from relaxing to another task (e.g. tidying room). Music continues.",
+            "C. Why Text": "if im trying to relax, the first option was least annoying",
+            "C. Why Timing Text": "if im trying to relax, i dont want to be disturbed by any. Whem im done, the one with most info is the most convenient one\n"
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "C. Why Text": "I dont want to be interrupted by this kind of message",
+            "C. Why Timing Text": "I dont want to be interrupted by this kind of message"
+        }
+    ],
+    "Scene_9_Tent": [
+        {
+            "Participant_ID": "R_2X0TJXeOLFuPfSN",
+            "Resolved_Version": "Short Speech (V2)",
+            "Raw_Timing_Choice": "Other:",
+            "D. Why Text": "If it is important, I want to know what the matter is, instantly. However, maybe my friends say something to me that I cant understand because of the full whatsapp reading notification. ",
+            "D. Why Timing Text": "If it is important, I want to know what the matter is, instantly. In this occasion, personally, I don't feel like it distracts me if its only the notification with the person's name. "
+        },
+        {
+            "Participant_ID": "R_2j8rLZgGyZGgQoj",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "D. Why Text": "Just the right amount of information in the notification. Long text reading disupts too much. (Version 3) ",
+            "D. Why Timing Text": "When I have time to listen, I might as well listen to the whole message. "
+        },
+        {
+            "Participant_ID": "R_2jcHCEFJA7BR0hI",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "D. Why Text": "Die Musik w\u00fcrde mich derma\u00dfen st\u00f6ren und sensibilisieren, wenn dann auch noch ein Ton einer Nachricht ert\u00f6nt... schrecklich.",
+            "D. Why Timing Text": "-"
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "D. Why Text": "I dont want to be interrupted by this kind of message",
+            "D. Why Timing Text": "I dont want to be interrupted by this kind of message"
+        }
+    ],
+    "Scene_6_Cycle_City": [
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "E. Why Text": "I dont want to be interrupted by this kind of message",
+            "E. Why Timing Text": "I dont want to be interrupted by this kind of message. "
+        }
+    ],
+    "Scene_5_Grocery_Shopping": [
+        {
+            "Participant_ID": "R_82PiWLNvqNB0Q5a",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "F. Why Text": "I would be overwhelmed by the two spoken sounds overlapping at the same time when I am also thinking about what to get at the store and my hands are full on top of that.",
+            "F. Why Timing Text": "Since the notification is still important, I wand to recieve it and I will need the info also completely (that is I want to know what she wrote)."
+        },
+        {
+            "Participant_ID": "R_8JCx6iV1TX1qGQN",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "F. Why Text": "Version 1 war relativ schwer zu bemerken (es h\u00e4tte sich auch um einen Signalton der Supermarktes handeln k\u00f6nnen, etwa vor einer Durchsage oder wenn eine Kasse schlie\u00dft/\u00f6ffnet). Trotzdem fand ich sie am besten, weil sie so dezent war, dass ich die Lautsprecherdurchsage noch vollst\u00e4ndig verstanden habe. Bei Version 2 habe ich die Mitte der Durchsage, bei Version 3 sowohl die Mitte als auch den Schluss der Durchsage \u00fcberhaupt nicht verstanden. Dies h\u00e4tte mich wom\u00f6glich ge\u00e4rgert, wenn die Durchsage f\u00fcr mich interessant gewesen w\u00e4re.",
+            "F. Why Timing Text": "W\u00e4hrend des Einkaufs bin ich nicht so konzentriert, dass ich durch eine ausf\u00fchrlichere Benachrichtigung (Version 3) besonders abgelenkt w\u00e4re. Weil ich beide H\u00e4nde voll habe, w\u00e4re es auch besonders bequem, wenn die Nachricht vorgelesen w\u00fcrde. Dann k\u00f6nnte ich entscheiden, ob die Nachricht so dringend und wichtig ist, dass ich die Einkaufst\u00fcten kurz abstellen sollte. Version 1 und 2 sind wiederum zu wenig informativ; Version 1 w\u00fcrde bei den Hintergrundger\u00e4uschen m\u00f6glicherweise sogar ganz untergehen."
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "F. Why Text": "not urgent",
+            "F. Why Timing Text": "not urgent\n"
+        },
+        {
+            "Participant_ID": "R_8q9Kfy21k0hl6rF",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "F. Why Text": "Because I can not underdand detailed information of 2 peaple at the same time",
+            "F. Why Timing Text": "Because then I don't nead to hear about the offer that maybe I would like to buy"
+        }
+    ],
+    "Scene_3_Cooking_Dinner": [
+        {
+            "Participant_ID": "R_25HmpH2IIzw051s",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "G. Why Text": "Version 1, because the others are quite difficult to notice, especially when distracted with cooking",
+            "G. Why Timing Text": "If the podcast is paused, I can focus appropriately on the notification and would then like to receive information about sender and content as well, since it\u2019s urgent"
+        },
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "G. Why Text": "the smallest ping is enough. i don't need an extra device that reads out the sender and/or the message to me when i am in the middle of something",
+            "G. Why Timing Text": "i don't need to be a slave to my phone; i am checking it all the time anyway--why do i need additional auditory stimulus to check it EVEN MORE than i already do????"
+        },
+        {
+            "Participant_ID": "R_82PiWLNvqNB0Q5a",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "G. Why Text": "It would be hard to differentiate between the podcast and the notification.",
+            "G. Why Timing Text": "Under the condition I described, it would be perfectly fine to listen to and understand the notification; then I would prefer to hear the whole thing."
+        },
+        {
+            "Participant_ID": "R_8JCx6iV1TX1qGQN",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "G. Why Text": "In dem Szenario war ich auf den Podcast konzentriert und bereits durch das Kochen abgelenkt. Sowohl Version 2 als auch Version 3 h\u00e4tten mich ganz vom Podcast abgelenkt. Ich h\u00e4tte zur\u00fcckspringen m\u00fcssen, um dem Gespr\u00e4ch weiter zu folgen. Version 1 hat meine Aufmerksamkeit kaum vom Podcast abgelenkt. Um die Nachricht zu lesen und ggf. zu beantworten, h\u00e4tte ich das Handy zu einem g\u00fcnstigen Zeitpunkt aufnehmen und den Podcast stoppen k\u00f6nnen. Version 2 ist komplett mit dem Podcast \"verschmolzen\", sodass ich nicht mehr zwischen beiden unterscheiden konnte. Insbesondere habe ich auch den Absender der Nachricht nicht verstehen k\u00f6nnen. Gegen\u00fcber Version 1 h\u00e4tte mir Version 2 daher schon gar keinen Mehrnutzen gegeben. Vielmehr w\u00e4re sie nur st\u00f6render gewesen. Version 3 war ausschlie\u00dflich st\u00f6rend. Ich habe weder Absender und Inhalt der Nachricht verstanden noch dem Podcast folgen k\u00f6nnen, da beide parallel liefen. Somit wiederum keinerlei Mehrnutzen gegen\u00fcber Version 1.",
+            "G. Why Timing Text": "Wenn ich weder auf das Kochen noch auf den Podcast konzentriert bin, werde ich durch  Benachrichtigungen nicht abgelenkt. In diesem Fall w\u00fcrde ich ein Mehr an Information (Absender und Inhalt der Nachricht wie in Version 3) gegen\u00fcber einer k\u00fcrzeren Benachrichtigung, aufgrund derer ich die Wichtigkeit und Dringlichkeit der Nachricht nicht final einsch\u00e4tzen kann (Version 1 und 2), bevorzugen."
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "G. Why Text": "not urgent",
+            "G. Why Timing Text": "I dont want to be interrupted by this kind of message"
+        }
+    ],
+    "Scene_4_Study_Coffee_Shop": [
+        {
+            "Participant_ID": "R_2jcHCEFJA7BR0hI",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "H. Why Text": "Ich finde dieses 'Ding' schon \u00e4u\u00dferst hilfreich. In Version 2 und 3 gab es diesmal kein 'Ding' vorweg. Das fand ich nicht so gut, um die Dinge im Kopf auch zu separieren.",
+            "H. Why Timing Text": "-"
+        },
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "None / No Audio",
+            "Raw_Timing_Choice": "Other:",
+            "H. Why Text": "i don't want to be distracted when i am studying",
+            "H. Why Timing Text": "don't need audio notification at all for messages, especially when studying. i see them when i see them."
+        },
+        {
+            "Participant_ID": "R_82PiWLNvqNB0Q5a",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "H. Why Text": "If I am working on something / studying, then I need to be able to focus on that.",
+            "H. Why Timing Text": "It would again (like in the meeting scenario) be ideal to be able to just get the notification that something happend while I was focussed, but then I get to check myself instead of having it being read out to me."
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "H. Why Text": "I dont want to be interrupted by this kind of message",
+            "H. Why Timing Text": "I dont want to be interrupted by this kind of message but if it was important I'd wanna know what happened\n"
+        }
+    ],
+    "Scene_8_Quiet_Friend_Over": [
+        {
+            "Participant_ID": "R_2qJWwhP8L0JTDwc",
+            "Resolved_Version": "Earcon (V1)",
+            "Raw_Timing_Choice": "Other:",
+            "I. Why Text": "the idea of me being privately distracted by notifications that my friend can't also hear feels disingenuous and weird",
+            "I. Why Timing Text": "i always keep my phone on silent mode when with friends"
+        },
+        {
+            "Participant_ID": "R_8TZerhduC2hcnKy",
+            "Resolved_Version": "Rich Speech (V3)",
+            "Raw_Timing_Choice": "Other:",
+            "I. Why Text": "I dont want to be interrupted by this kind of message",
+            "I. Why Timing Text": "I dont want to be interrupted by this kind of message"
+        }
+    ]
+}
