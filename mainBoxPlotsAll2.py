@@ -46,14 +46,14 @@ IV_PROPS = {
         'title_name': 'Social Setting'
     },
     'e_Task': {
-        'order': ['Low', 'High mental', 'High physical'], 
-        'palette': {'Low': '#fd8d3c', 'High mental': '#e6550d', 'High physical': '#a63603'}, 
+        'order': ['High mental', 'Low', 'High physical'], 
+        'palette': {'High mental': '#fd8d3c', 'Low': '#e6550d', 'High physical': '#a63603'}, 
         'label': r"$E_{TASK}$ (Task Load)",
         'title_name': 'Task Load'
     },
     'CM': {
-        'order': ['Quiet', 'Music', 'Speech'], 
-        'palette': {'Quiet': '#74c476', 'Music': '#31a354', 'Speech': '#006d2c'}, 
+        'order': ['Music', 'Quiet', 'Speech'], 
+        'palette': {'Music': '#74c476', 'Quiet': '#31a354', 'Speech': '#006d2c'}, 
         'label': r"$C_M$ (Sound Masking)",
         'title_name': 'Sound Masking'
     }
@@ -212,12 +212,13 @@ def create_comparison_boxplots(long_df):
     sns.set_theme(style="whitegrid")
     ticks_1_to_7 = [1, 2, 3, 4, 5, 6, 7]
     notification_order = ['Earcon', 'Short Speech', 'Rich Speech']
+    type_markers = {'Earcon': 'o', 'Short Speech': 's', 'Rich Speech': '^'}
+    type_colors = {'Earcon': '#ffb000', 'Short Speech': '#c466ff', 'Rich Speech': '#6a0dad'}
 
     for rel in COMPARISON_RELATIONSHIPS:
         dv = rel['dv']
         iv = rel['iv']
         iv_config = IV_PROPS[iv]
-        meanprops = {"marker":"X", "markerfacecolor":"white", "markeredgecolor":"black", "markersize":"8", "zorder": 5}
         
         # 1. Create a separate plot for EACH sub-condition of the IV
         for condition in iv_config['order']:
@@ -236,7 +237,7 @@ def create_comparison_boxplots(long_df):
             ax = sns.boxplot(
                 data=plot_df, x='Notification_Type', y=dv, 
                 order=notification_order, color=condition_color,
-                showmeans=True, meanprops=meanprops
+                showmeans=False
             )
             
             # Calculate means and stds to draw connections and add text
@@ -247,11 +248,16 @@ def create_comparison_boxplots(long_df):
             x_coords = range(len(notification_order))
             ax.plot(x_coords, means.values, color='black', linestyle='--', linewidth=1.5, zorder=4)
             
-            # Add mean and std annotations
+            # Add mean and std annotations, and scatter the custom markers
             for tick, t_name in enumerate(notification_order):
                 if pd.notna(means[t_name]):
                     mean_val = means[t_name]
                     std_val = stds[t_name]
+                    
+                    # Scatter custom marker
+                    ax.scatter(tick, mean_val, marker=type_markers[t_name], color=type_colors[t_name], 
+                               s=90, edgecolors='black', zorder=5, alpha=1.0)
+                               
                     ax.text(tick, 7.2, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
                             horizontalalignment='center', size='small', color='black', weight='bold')
 
@@ -282,7 +288,7 @@ def create_comparison_boxplots(long_df):
             ax = sns.boxplot(
                 data=plot_df_overall, x='Notification_Type', y=dv, 
                 order=notification_order, color=combined_color,
-                showmeans=True, meanprops=meanprops
+                showmeans=False
             )
             
             # Calculate overall means and stds
@@ -293,11 +299,16 @@ def create_comparison_boxplots(long_df):
             x_coords = range(len(notification_order))
             ax.plot(x_coords, means_overall.values, color='black', linestyle='--', linewidth=1.5, zorder=4)
             
-            # Add overall mean and std annotations
+            # Add overall mean and std annotations, and scatter the custom markers
             for tick, t_name in enumerate(notification_order):
                 if pd.notna(means_overall[t_name]):
                     mean_val = means_overall[t_name]
                     std_val = stds_overall[t_name]
+                    
+                    # Scatter custom marker
+                    ax.scatter(tick, mean_val, marker=type_markers[t_name], color=type_colors[t_name], 
+                               s=90, edgecolors='black', zorder=5, alpha=1.0)
+                               
                     ax.text(tick, 7.2, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
                             horizontalalignment='center', size='small', color='black', weight='bold')
                             

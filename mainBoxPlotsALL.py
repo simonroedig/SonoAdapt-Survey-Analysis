@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import statsmodels.formula.api as smf
+from scipy.stats import ttest_ind
+from matplotlib.lines import Line2D
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -48,14 +50,14 @@ IV_PROPS = {
         'title_name': 'Social Setting'
     },
     'e_Task': {
-        'order': ['Low', 'High mental', 'High physical'], 
-        'palette': {'Low': '#fd8d3c', 'High mental': '#e6550d', 'High physical': '#a63603'}, 
+        'order': ['High mental', 'Low', 'High physical'], 
+        'palette': {'High mental': '#fd8d3c', 'Low': '#e6550d', 'High physical': '#a63603'}, 
         'label': r"$E_{TASK}$ (Task Load)",
         'title_name': 'Task Load'
     },
     'CM': {
-        'order': ['Quiet', 'Music', 'Speech'], 
-        'palette': {'Quiet': '#74c476', 'Music': '#31a354', 'Speech': '#006d2c'}, 
+        'order': ['Music', 'Quiet', 'Speech'], 
+        'palette': {'Music': '#74c476', 'Quiet': '#31a354', 'Speech': '#006d2c'}, 
         'label': r"$C_M$ (Sound Masking)",
         'title_name': 'Sound Masking'
     }
@@ -244,7 +246,15 @@ def create_boxplots(long_df):
             
             plt.figure(figsize=(9, 6))
             
-            meanprops={"marker":"X", "markerfacecolor":"white", "markeredgecolor":"black", "markersize":"8"}
+            if t_name == 'Earcon':
+                meanprops={"marker":"o", "markerfacecolor":"#ffb000", "markeredgecolor":"black", "markersize":"9"}
+            elif t_name == 'Short Speech':
+                meanprops={"marker":"s", "markerfacecolor":"#c466ff", "markeredgecolor":"black", "markersize":"9"}
+            elif t_name == 'Rich Speech':
+                meanprops={"marker":"^", "markerfacecolor":"#6a0dad", "markeredgecolor":"black", "markersize":"9"}
+            else:
+                meanprops={"marker":"X", "markerfacecolor":"white", "markeredgecolor":"black", "markersize":"8"}
+
             ax = sns.boxplot(
                 data=plot_df, x=iv, y=dv, 
                 order=iv_config['order'], palette=iv_config['palette'],
@@ -275,6 +285,108 @@ def create_boxplots(long_df):
             filename = os.path.join("plots", f"{plot_type_label}_{t_name.replace(' ', '')}_{iv}_vs_{dv.replace(' ', '')}.png")
             plt.savefig(filename, dpi=300)
             plt.close()
+
+            # --- NEW ADVANCED PLOT LOGIC ---
+            if is_primary and t_name == 'Overall':
+                plt.figure(figsize=(9, 6))
+                
+                y_max = 7.7
+                if iv in ['e_Task', 'Asocial', 'CM']:
+                    y_max = 8.8 # Make room for bars
+                    
+                ax_adv = sns.boxplot(
+                    data=plot_df, x=iv, y=dv, 
+                    order=iv_config['order'], palette=iv_config['palette'],
+                    showmeans=False, meanprops=meanprops
+                )
+                
+                # Plot individual means for Earcon, Short Speech, Rich Speech
+                types_order = ['All', 'Earcon', 'Short Speech', 'Rich Speech']
+                type_markers = {'All': 'X', 'Earcon': 'o', 'Short Speech': 's', 'Rich Speech': '^'}
+                type_colors = {'All': 'white', 'Earcon': '#ffb000', 'Short Speech': '#c466ff', 'Rich Speech': '#6a0dad'}
+                type_offsets = {'All': -0.3, 'Earcon': -0.1, 'Short Speech': 0.1, 'Rich Speech': 0.3}
+                
+                for tick, label in enumerate(iv_config['order']):
+                    label_df = plot_df[plot_df[iv] == label]
+                    for n_type in types_order:
+                        if n_type == 'All':
+                            type_mean = label_df[dv].mean()
+                        else:
+                            type_mean = label_df[label_df['Notification_Type'] == n_type][dv].mean()
+                            
+                        if pd.notna(type_mean):
+                            ax_adv.scatter(tick + type_offsets[n_type], type_mean, 
+                                           marker=type_markers[n_type], color=type_colors[n_type], 
+                                           s=80, edgecolors='black', zorder=5, alpha=0.9)
+
+                # Add Significance Bars
+                def add_stat_annotation(ax, x1, x2, y, h, text):
+                    ax.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c='k')
+                    ax.text((x1+x2)*.5, y+h, text, ha='center', va='bottom', color='k', weight='bold')
+
+                LMM_RESULTS = {
+                    'Disruption': {
+                        'Asocial': {('Alone', 'Passive'): '*', ('Alone', 'Interactive'): 'ns'},
+                        'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
+                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                    },
+                    'Social_Acceptability': {
+                        'Asocial': {('Alone', 'Passive'): 'ns', ('Alone', 'Interactive'): '***'},
+                        'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
+                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                    },
+                    'Detectability': {
+                        'Asocial': {('Alone', 'Passive'): '**', ('Alone', 'Interactive'): '**'},
+                        'e_Task': {('High mental', 'Low'): 'ns', ('High mental', 'High physical'): '***'},
+                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                    }
+                }
+
+                labels = iv_config['order']
+                sig_height = 7.7
+                step = 0.5
+                
+                if dv in LMM_RESULTS and iv in LMM_RESULTS[dv]:
+                    sig_dict = LMM_RESULTS[dv][iv]
+                    for (g1, g2), sig_text in sig_dict.items():
+                        if g1 in labels and g2 in labels:
+                            i = labels.index(g1)
+                            j = labels.index(g2)
+                            if i > j:
+                                i, j = j, i
+                            
+                            add_stat_annotation(ax_adv, i, j, sig_height, 0.1, sig_text)
+                            sig_height += step
+                            y_max = max(y_max, sig_height + 0.4)
+
+                for tick, label in enumerate(iv_config['order']):
+                    if label in means.index:
+                        mean_val = means[label]
+                        std_val = stds[label]
+                        ax_adv.text(tick, 7.3, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
+                                horizontalalignment='center', verticalalignment='center', size='small', color='black', weight='bold')
+
+                plt.title(f"Advanced {t_title}: {dv.replace('_', ' ')} by {iv_config['title_name']}", fontsize=14, fontname='Segoe UI Emoji')
+                plt.xlabel(iv_config['label'], fontsize=12)
+                plt.ylabel(dv.replace('_', ' '), fontsize=12)
+                
+                plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
+                plt.ylim(0.5, y_max)
+                
+                plt.tight_layout()
+                filename_adv = os.path.join("plots", f"PrimaryAdvanced_Overall_{iv}_vs_{dv.replace(' ', '')}.png")
+                plt.savefig(filename_adv, dpi=300)
+                plt.close()
+                
+                # Save Standalone Legend
+                fig_leg = plt.figure(figsize=(3, 2))
+                legend_elements = [Line2D([0], [0], marker=type_markers[t], color='w', label=t, 
+                                          markerfacecolor=type_colors[t], markersize=9, markeredgecolor='black') 
+                                   for t in types_order]
+                fig_leg.legend(handles=legend_elements, loc='center', title="Notification Types")
+                fig_leg.savefig(os.path.join("plots", "PrimaryAdvanced_Legend_Standalone.png"), dpi=300, bbox_inches='tight')
+                plt.close(fig_leg)
+            # --- END NEW ADVANCED PLOT LOGIC ---
 
 def main():
     data_file = 'data.xlsx'
