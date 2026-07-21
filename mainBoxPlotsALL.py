@@ -288,7 +288,7 @@ def create_boxplots(long_df):
 
             # --- NEW ADVANCED PLOT LOGIC ---
             if is_primary and t_name == 'Overall':
-                for plot_style in ['offset', 'inline']:
+                for plot_style in ['offset', 'inline', 'inline_brief']:
                     plt.figure(figsize=(9, 6))
                     
                     y_max = 7.7
@@ -372,11 +372,20 @@ def create_boxplots(long_df):
                     plt.xlabel(iv_config['label'], fontsize=12)
                     plt.ylabel(dv.replace('_', ' '), fontsize=12)
                     
-                    plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
+                    # Use numeric-only labels for brief version, full Likert text otherwise
+                    if plot_style == 'inline_brief':
+                        plt.yticks(ticks=ticks_1_to_7, labels=[str(i) for i in ticks_1_to_7], fontsize=10)
+                    else:
+                        plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
                     plt.ylim(0.5, y_max)
                     
                     plt.tight_layout()
-                    suffix = "" if plot_style == 'offset' else "_inline"
+                    if plot_style == 'offset':
+                        suffix = ""
+                    elif plot_style == 'inline':
+                        suffix = "_inline"
+                    else:
+                        suffix = "_inline_brief"
                     filename_adv = os.path.join("plots", f"PrimaryAdvanced_Overall_{iv}_vs_{dv.replace(' ', '')}{suffix}.png")
                     plt.savefig(filename_adv, dpi=300)
                     plt.close()

@@ -311,14 +311,36 @@ def create_comparison_boxplots(long_df):
                                
                     ax.text(tick, 7.2, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
                             horizontalalignment='center', size='small', color='black', weight='bold')
-                            
+
+            # --- Significance Bars (Notification Type main effect from LMM) ---
+            def add_stat_annotation(ax, x1, x2, y, h, text):
+                ax.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c='k')
+                ax.text((x1+x2)*.5, y+h, text, ha='center', va='bottom', color='k', weight='bold')
+
+            # LMM pairwise results for Notification Type (Bonferroni α = .0167)
+            # Order: Earcon(0), Short Speech(1), Rich Speech(2)
+            NT_LMM_RESULTS = {
+                'Disruption': {(0, 1): '***', (0, 2): '***', (1, 2): '***'},
+                'Social_Acceptability': {(0, 1): '***', (0, 2): '***', (1, 2): 'ns'},
+                'Detectability': {(0, 1): 'ns', (0, 2): '**', (1, 2): 'ns'}
+            }
+
+            y_max = 8.0
+            if dv in NT_LMM_RESULTS:
+                sig_height = 8.0
+                step = 0.5
+                for (i, j), sig_text in NT_LMM_RESULTS[dv].items():
+                    add_stat_annotation(ax, i, j, sig_height, 0.1, sig_text)
+                    sig_height += step
+                    y_max = max(y_max, sig_height + 0.4)
+
             # Formatting for combined
             plt.title(f"{dv.replace('_', ' ')} by Notification Type\n(Combined across {iv_config['title_name']}s)", fontsize=14, fontname='Segoe UI Emoji')
             plt.xlabel("Notification Type", fontsize=12)
             plt.ylabel(dv.replace('_', ' '), fontsize=12)
             
             plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
-            plt.ylim(0.5, 7.7)
+            plt.ylim(0.5, y_max)
             
             if DEBUG_MODE: add_debug_overlay(ax, plot_df_overall, 'Notification_Type')
 
