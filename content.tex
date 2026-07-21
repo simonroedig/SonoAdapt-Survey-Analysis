@@ -418,26 +418,47 @@ When asked to select all acceptable maximum lengths for spoken notifications, th
 When prompting users about their attitude toward the acceptability of an AI summarizing long messages, participants had a completely mixed reaction. The responses were highly polarized, with 48.6\% expressing some level of disagreement and 40.5\% indicating agreement, while the remaining 10.8\% remained neutral.
 
 \subsection{Statistical Approach and Interpretation}
-To analyze our repeated-measures design, we fitted Linear Mixed Models (LMMs). LMMs are highly appropriate for this type of study because they account for the fact that the same participant provided multiple ratings across different scenarios. By adding the participant ID as a random effect, the model controls for individual baseline differences (e.g., some users generally rating everything more conservatively). 
+To analyze our repeated-measures design, we fitted Linear Mixed Models (LMMs) with maximum likelihood estimation using the \textit{statsmodels} Python package. LMMs are highly appropriate for this type of study because they account for the fact that the same participant provided multiple ratings across different scenarios. By adding the participant ID as a random effect, the model controls for individual baseline differences (e.g., some users generally rating everything more conservatively). 
 
 Because our scenarios were structured using a fractional Taguchi L9 array rather than a full-factorial design, our models strictly evaluated the \textit{main effects} of the independent variables (Notification Type, Social Setting, Task Load, and Soundscape) independently. Testing all cross-interactions would result in mathematical overfitting (singular matrices) due to the intentionally omitted combinations in the L9 array.
 
-\textbf{How to read the LMM results:} To fully understand the differences between all contextual factors, we extracted all pairwise comparisons from our LMMs by systematically shifting the reference level (baseline) for each factor. \autoref{tab:lmm_pairwise} details these comparisons. The resulting values ($\Delta M$) represent the absolute point-difference on our 7-point Likert scale between two specific factor levels. 
-For example, in \autoref{tab:lmm_pairwise}, the comparison "Interactive vs. Alone" shows a $\Delta M$ of -1.54 for Social Acceptability. This translates simply to: \textit{When users are in an interactive setting, they rate the social acceptability on average 1.54 points lower than when they are alone.}
-
-
 To protect against Type I errors (false positives) that arise from running multiple parallel tests, we applied a Bonferroni correction for our three main models (Disruption, Social Acceptability, Detectability). Our threshold for statistical significance was thus strictly adjusted to $\alpha = .0167$ ($.05 / 3$). 
+
+\textbf{Omnibus Main Effect Tests:} Before examining specific pairwise differences, we first verified whether each factor had a statistically significant overall (omnibus) effect on each dependent variable using Type III Wald $\chi^2$ tests. Only factors with a significant omnibus effect were subsequently interpreted via pairwise comparisons. As shown in \autoref{tab:omnibus_tests}, nearly all main effects reached significance. The single exception was the effect of Notification Type on Detectability ($\chi^2(2) = 7.47, p = .024$), which did not survive the Bonferroni-corrected threshold. Consequently, pairwise comparisons for this specific factor--dimension combination are not reported.
+
+\textbf{Pairwise Comparisons:} For factors with a significant omnibus effect, we extracted all pairwise comparisons by systematically re-fitting the LMM with shifted reference levels for each factor. \autoref{tab:lmm_pairwise} details these comparisons. The resulting values ($\Delta M$) represent the absolute point-difference on our 7-point Likert scale between two specific factor levels. 
+For example, in \autoref{tab:lmm_pairwise}, the comparison ``Interactive vs. Alone'' shows a $\Delta M$ of $-1.54$ for Social Acceptability. This translates simply to: \textit{When users are in an interactive setting, they rate the social acceptability on average 1.54 points lower than when they are alone.}
 
 \textbf{Model Fit and Variance Explained:} To evaluate the robustness of our models, \autoref{tab:lmm_pairwise} includes the Akaike Information Criterion (AIC) and Nakagawa's $R^2$ metrics. The Marginal $R^2$ ($R^2_{marg}$) represents the variance explained exclusively by our fixed experimental factors (Notification Type, Social Setting, Task Load, and Soundscape). These factors alone account for 28\% to 36\% of the variance in user ratings, proving that context heavily dictates perception. Crucially, when including the random effect (individual participant differences), the Conditional $R^2$ ($R^2_{cond}$) shows that our models explain roughly 50\% of the total variance across all dimensions (e.g., $R^2_{cond} = 0.54$ for Social Acceptability).
 
 
-
 % ==========================================
-% OVERVIEW TABLE FOR LMM RESULTS
+% OMNIBUS MAIN EFFECT TESTS TABLE
 % ==========================================
 \begin{table}[H]
 \centering
-\caption{Linear Mixed Model (LMM) pairwise comparison results. Values ($\Delta M$) indicate the absolute point-difference on the 7-point Likert scale between the two compared levels. \textcolor{blue}{Blue} indicates a significant positive shift for the first level compared to the second, \textcolor{red}{Red} indicates a significant negative shift. The significance threshold is Bonferroni-corrected to $p < .0167$. \textbf{Framed cells} highlight the primary relationships targeted by our study design.}
+\caption{Omnibus main effect tests (Type III Wald $\chi^2$) for each factor across the three dependent variables. All factors were tested with $df = 2$. Significance threshold: Bonferroni-corrected $\alpha = .0167$.}
+\label{tab:omnibus_tests}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Factor} & \textbf{Disruption} & \textbf{Social Acc.} & \textbf{Detectability} \\
+\midrule
+Notification Type & $\chi^2 = 191.91$*** & $\chi^2 = 61.89$*** & $\chi^2 = 7.47$\hphantom{***} \\
+Social Setting    & $\chi^2 = 12.18$**\hphantom{*}  & $\chi^2 = 218.02$*** & $\chi^2 = 10.43$**\hphantom{*} \\
+Task Load         & $\chi^2 = 202.71$*** & $\chi^2 = 58.08$***  & $\chi^2 = 29.03$*** \\
+Soundscape        & $\chi^2 = 39.97$***  & $\chi^2 = 76.38$***  & $\chi^2 = 109.81$*** \\
+\bottomrule
+\multicolumn{4}{l}{\small \textit{Note:} * $p < .0167$, ** $p < .01$, *** $p < .001$. All tests with $df = 2$.}
+\end{tabular}
+\end{table}
+
+
+% ==========================================
+% PAIRWISE COMPARISON TABLE
+% ==========================================
+\begin{table}[H]
+\centering
+\caption{Linear Mixed Model (LMM) pairwise comparison results for factors with a significant omnibus main effect (see \autoref{tab:omnibus_tests}). Values ($\Delta M$) indicate the absolute point-difference on the 7-point Likert scale between the two compared levels. \textcolor{blue}{Blue} indicates a significant positive shift for the first level compared to the second, \textcolor{red}{Red} indicates a significant negative shift. The significance threshold is Bonferroni-corrected to $p < .0167$. \textbf{Framed cells} highlight the primary relationships targeted by our study design. \textcolor{gray}{Gray} cells indicate comparisons where the omnibus main effect was not significant; pairwise values are shown for completeness but are not interpreted.}
 \label{tab:lmm_pairwise}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lrrr@{}}
@@ -445,9 +466,9 @@ To protect against Type I errors (false positives) that arise from running multi
 \textbf{Pairwise Comparison} & \textbf{Disruption ($\Delta M$)} & \textbf{Social Acc. ($\Delta M$)} & \textbf{Detectability ($\Delta M$)} \\
 \midrule
 \textit{Notification Type} & & & \\
-Short Speech vs. Earcon & \textcolor{blue}{1.14***} & \textcolor{red}{-0.63***} & 0.18\hphantom{***} \\
-Rich Speech vs. Earcon & \textcolor{blue}{1.57***} & \textcolor{red}{-0.86***} & \textcolor{blue}{0.26**\hphantom{*}} \\
-Rich Speech vs. Short Speech & \textcolor{blue}{0.43***} & -0.23\hphantom{***} & 0.08\hphantom{***} \\
+Short Speech vs. Earcon & \textcolor{blue}{1.14***} & \textcolor{red}{-0.63***} & \textcolor{gray}{0.18\hphantom{***}} \\
+Rich Speech vs. Earcon & \textcolor{blue}{1.57***} & \textcolor{red}{-0.86***} & \textcolor{gray}{0.26\hphantom{***}} \\
+Rich Speech vs. Short Speech & \textcolor{blue}{0.43***} & -0.23\hphantom{***} & \textcolor{gray}{0.08\hphantom{***}} \\
 \midrule
 \textit{Social Setting} & & & \\
 Passive vs. Alone & \textcolor{red}{-0.30*\hphantom{**}} & \fbox{-0.22\hphantom{***}} & \textcolor{blue}{0.27**\hphantom{*}} \\
@@ -591,9 +612,9 @@ $$ \text{Detectability} \sim \text{Notification Type} + \text{Social Setting} + 
 
 The physical acoustic environment predictably altered the user's ability to hear the notifications. Compared to environments with music ($M = 5.83$), completely quiet environments naturally improved detectability ($M = 6.44$; $\Delta M = 0.61, p < .001$), while background speech severely hindered it ($M = 5.41$; $\Delta M = -0.42, p < .001$), as seen in \autoref{fig:box_detectability}a. The contrast between quiet and speech environments was the largest observed effect ($\Delta M = -1.03, p < .001$), confirming that ambient speech represents the most challenging acoustic condition for notification perception.
 
-We also found a significant effect regarding the notification type: \textit{Rich Speech} ($M = 6.01$) was significantly easier to detect overall than an abstract Earcon ($M = 5.74$; $\Delta M = 0.26, p = .007$). \autoref{fig:box_detectability}b details these findings across all notification formats.
+Notably, the omnibus main effect of notification type on detectability did not reach statistical significance after Bonferroni correction ($\chi^2(2) = 7.47, p = .024$; threshold: $p < .0167$). While a descriptive trend suggests that speech-based formats (Rich Speech: $M = 6.01$; Short Speech: $M = 5.92$) may be slightly easier to detect than Earcons ($M = 5.74$), this difference cannot be confirmed statistically and pairwise comparisons for this factor are therefore not interpreted.
 
-Analyzing the interaction between soundscape and notification type reveals distinct auditory masking effects. In a completely quiet environment, all notification types are highly detectable (Earcon: $M = 6.21$; Rich Speech: $M = 6.59$). However, in an environment with background music, the Earcon becomes noticeably harder to detect ($M = 5.33$), while spoken notifications cut through the music more easily (Rich Speech: $M = 6.14$). Conversely, when the ambient soundscape consists of background speech, this effect reverses: the Earcon remains moderately detectable ($M = 5.69$), but the detectability of Short Speech ($M = 5.23$) and Rich Speech ($M = 5.31$) drops. This demonstrates that background speech directly masks incoming speech notifications, whereas music primarily masks abstract tonal alerts.
+Analyzing the descriptive interaction between soundscape and notification type reveals distinct auditory masking patterns. In a completely quiet environment, all notification types are highly detectable (Earcon: $M = 6.21$; Rich Speech: $M = 6.59$). However, in an environment with background music, the Earcon becomes noticeably harder to detect ($M = 5.33$), while spoken notifications cut through the music more easily (Rich Speech: $M = 6.14$). Conversely, when the ambient soundscape consists of background speech, this effect reverses: the Earcon remains moderately detectable ($M = 5.69$), but the detectability of Short Speech ($M = 5.23$) and Rich Speech ($M = 5.31$) drops. These descriptive patterns suggest that background speech directly masks incoming speech notifications, whereas music primarily masks abstract tonal alerts.
 
 \begin{figure}[H]
     \centering
