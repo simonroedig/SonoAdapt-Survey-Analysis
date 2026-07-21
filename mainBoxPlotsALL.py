@@ -328,19 +328,19 @@ def create_boxplots(long_df):
 
                     LMM_RESULTS = {
                         'Disruption': {
-                            'Asocial': {('Alone', 'Passive'): '*', ('Alone', 'Interactive'): 'ns'},
-                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
-                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                            'Asocial': {('Alone', 'Passive'): '*', ('Alone', 'Interactive'): 'ns', ('Interactive', 'Passive'): '***'},
+                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***', ('Low', 'High physical'): 'ns'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***', ('Quiet', 'Speech'): 'ns'}
                         },
                         'Social_Acceptability': {
-                            'Asocial': {('Alone', 'Passive'): 'ns', ('Alone', 'Interactive'): '***'},
-                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
-                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                            'Asocial': {('Alone', 'Passive'): 'ns', ('Alone', 'Interactive'): '***', ('Interactive', 'Passive'): '***'},
+                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***', ('Low', 'High physical'): 'ns'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***', ('Quiet', 'Speech'): 'ns'}
                         },
                         'Detectability': {
-                            'Asocial': {('Alone', 'Passive'): '**', ('Alone', 'Interactive'): '**'},
-                            'e_Task': {('High mental', 'Low'): 'ns', ('High mental', 'High physical'): '***'},
-                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                            'Asocial': {('Alone', 'Passive'): '**', ('Alone', 'Interactive'): '**', ('Interactive', 'Passive'): 'ns'},
+                            'e_Task': {('High mental', 'Low'): 'ns', ('High mental', 'High physical'): '***', ('Low', 'High physical'): '***'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***', ('Quiet', 'Speech'): '***'}
                         }
                     }
 
