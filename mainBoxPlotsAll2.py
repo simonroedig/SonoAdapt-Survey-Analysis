@@ -54,8 +54,8 @@ IV_PROPS = {
     'CM': {
         'order': ['Music', 'Quiet', 'Speech'], 
         'palette': {'Music': '#74c476', 'Quiet': '#31a354', 'Speech': '#006d2c'}, 
-        'label': r"$C_M$ (Sound Masking)",
-        'title_name': 'Sound Masking'
+        'label': r"$C_M$ (Soundscape)",
+        'title_name': 'Soundscape'
     }
 }
 

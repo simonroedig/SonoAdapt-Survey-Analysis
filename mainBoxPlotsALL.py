@@ -58,8 +58,8 @@ IV_PROPS = {
     'CM': {
         'order': ['Music', 'Quiet', 'Speech'], 
         'palette': {'Music': '#74c476', 'Quiet': '#31a354', 'Speech': '#006d2c'}, 
-        'label': r"$C_M$ (Sound Masking)",
-        'title_name': 'Sound Masking'
+        'label': r"$C_M$ (Soundscape)",
+        'title_name': 'Soundscape'
     }
 }
 
@@ -288,95 +288,98 @@ def create_boxplots(long_df):
 
             # --- NEW ADVANCED PLOT LOGIC ---
             if is_primary and t_name == 'Overall':
-                plt.figure(figsize=(9, 6))
-                
-                y_max = 7.7
-                if iv in ['e_Task', 'Asocial', 'CM']:
-                    y_max = 8.8 # Make room for bars
+                for plot_style in ['offset', 'inline']:
+                    plt.figure(figsize=(9, 6))
                     
-                ax_adv = sns.boxplot(
-                    data=plot_df, x=iv, y=dv, 
-                    order=iv_config['order'], palette=iv_config['palette'],
-                    showmeans=False, meanprops=meanprops
-                )
-                
-                # Plot individual means for Earcon, Short Speech, Rich Speech
-                types_order = ['All', 'Earcon', 'Short Speech', 'Rich Speech']
-                type_markers = {'All': 'X', 'Earcon': 'o', 'Short Speech': 's', 'Rich Speech': '^'}
-                type_colors = {'All': 'white', 'Earcon': '#ffb000', 'Short Speech': '#c466ff', 'Rich Speech': '#6a0dad'}
-                type_offsets = {'All': -0.3, 'Earcon': -0.1, 'Short Speech': 0.1, 'Rich Speech': 0.3}
-                
-                for tick, label in enumerate(iv_config['order']):
-                    label_df = plot_df[plot_df[iv] == label]
-                    for n_type in types_order:
-                        if n_type == 'All':
-                            type_mean = label_df[dv].mean()
-                        else:
+                    y_max = 7.7
+                    if iv in ['e_Task', 'Asocial', 'CM']:
+                        y_max = 8.8 # Make room for bars
+                        
+                    ax_adv = sns.boxplot(
+                        data=plot_df, x=iv, y=dv, 
+                        order=iv_config['order'], palette=iv_config['palette'],
+                        showmeans=False, meanprops=meanprops
+                    )
+                    
+                    # Plot individual means for Earcon, Short Speech, Rich Speech
+                    types_order = ['Earcon', 'Short Speech', 'Rich Speech']
+                    type_markers = {'Earcon': 'o', 'Short Speech': 's', 'Rich Speech': '^'}
+                    type_colors = {'Earcon': '#ffb000', 'Short Speech': '#c466ff', 'Rich Speech': '#6a0dad'}
+                    
+                    if plot_style == 'offset':
+                        type_offsets = {'Earcon': -0.15, 'Short Speech': 0.0, 'Rich Speech': 0.15}
+                    else:
+                        type_offsets = {'Earcon': 0.0, 'Short Speech': 0.0, 'Rich Speech': 0.0}
+                    
+                    for tick, label in enumerate(iv_config['order']):
+                        label_df = plot_df[plot_df[iv] == label]
+                        for n_type in types_order:
                             type_mean = label_df[label_df['Notification_Type'] == n_type][dv].mean()
-                            
-                        if pd.notna(type_mean):
-                            ax_adv.scatter(tick + type_offsets[n_type], type_mean, 
-                                           marker=type_markers[n_type], color=type_colors[n_type], 
-                                           s=80, edgecolors='black', zorder=5, alpha=0.9)
+                                
+                            if pd.notna(type_mean):
+                                ax_adv.scatter(tick + type_offsets[n_type], type_mean, 
+                                               marker=type_markers[n_type], color=type_colors[n_type], 
+                                               s=80, edgecolors='black', zorder=5, alpha=0.9)
 
-                # Add Significance Bars
-                def add_stat_annotation(ax, x1, x2, y, h, text):
-                    ax.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c='k')
-                    ax.text((x1+x2)*.5, y+h, text, ha='center', va='bottom', color='k', weight='bold')
+                    # Add Significance Bars
+                    def add_stat_annotation(ax, x1, x2, y, h, text):
+                        ax.plot([x1, x1, x2, x2], [y, y+h, y+h, y], lw=1.5, c='k')
+                        ax.text((x1+x2)*.5, y+h, text, ha='center', va='bottom', color='k', weight='bold')
 
-                LMM_RESULTS = {
-                    'Disruption': {
-                        'Asocial': {('Alone', 'Passive'): '*', ('Alone', 'Interactive'): 'ns'},
-                        'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
-                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
-                    },
-                    'Social_Acceptability': {
-                        'Asocial': {('Alone', 'Passive'): 'ns', ('Alone', 'Interactive'): '***'},
-                        'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
-                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
-                    },
-                    'Detectability': {
-                        'Asocial': {('Alone', 'Passive'): '**', ('Alone', 'Interactive'): '**'},
-                        'e_Task': {('High mental', 'Low'): 'ns', ('High mental', 'High physical'): '***'},
-                        'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                    LMM_RESULTS = {
+                        'Disruption': {
+                            'Asocial': {('Alone', 'Passive'): '*', ('Alone', 'Interactive'): 'ns'},
+                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                        },
+                        'Social_Acceptability': {
+                            'Asocial': {('Alone', 'Passive'): 'ns', ('Alone', 'Interactive'): '***'},
+                            'e_Task': {('High mental', 'Low'): '***', ('High mental', 'High physical'): '***'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                        },
+                        'Detectability': {
+                            'Asocial': {('Alone', 'Passive'): '**', ('Alone', 'Interactive'): '**'},
+                            'e_Task': {('High mental', 'Low'): 'ns', ('High mental', 'High physical'): '***'},
+                            'CM': {('Music', 'Quiet'): '***', ('Music', 'Speech'): '***'}
+                        }
                     }
-                }
 
-                labels = iv_config['order']
-                sig_height = 7.7
-                step = 0.5
-                
-                if dv in LMM_RESULTS and iv in LMM_RESULTS[dv]:
-                    sig_dict = LMM_RESULTS[dv][iv]
-                    for (g1, g2), sig_text in sig_dict.items():
-                        if g1 in labels and g2 in labels:
-                            i = labels.index(g1)
-                            j = labels.index(g2)
-                            if i > j:
-                                i, j = j, i
-                            
-                            add_stat_annotation(ax_adv, i, j, sig_height, 0.1, sig_text)
-                            sig_height += step
-                            y_max = max(y_max, sig_height + 0.4)
+                    labels = iv_config['order']
+                    sig_height = 7.7
+                    step = 0.5
+                    
+                    if dv in LMM_RESULTS and iv in LMM_RESULTS[dv]:
+                        sig_dict = LMM_RESULTS[dv][iv]
+                        for (g1, g2), sig_text in sig_dict.items():
+                            if g1 in labels and g2 in labels:
+                                i = labels.index(g1)
+                                j = labels.index(g2)
+                                if i > j:
+                                    i, j = j, i
+                                
+                                add_stat_annotation(ax_adv, i, j, sig_height, 0.1, sig_text)
+                                sig_height += step
+                                y_max = max(y_max, sig_height + 0.4)
 
-                for tick, label in enumerate(iv_config['order']):
-                    if label in means.index:
-                        mean_val = means[label]
-                        std_val = stds[label]
-                        ax_adv.text(tick, 7.3, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
-                                horizontalalignment='center', verticalalignment='center', size='small', color='black', weight='bold')
+                    for tick, label in enumerate(iv_config['order']):
+                        if label in means.index:
+                            mean_val = means[label]
+                            std_val = stds[label]
+                            ax_adv.text(tick, 7.3, f"M={mean_val:.2f}\nSD={std_val:.2f}", 
+                                    horizontalalignment='center', verticalalignment='center', size='small', color='black', weight='bold')
 
-                plt.title(f"Advanced {t_title}: {dv.replace('_', ' ')} by {iv_config['title_name']}", fontsize=14, fontname='Segoe UI Emoji')
-                plt.xlabel(iv_config['label'], fontsize=12)
-                plt.ylabel(dv.replace('_', ' '), fontsize=12)
-                
-                plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
-                plt.ylim(0.5, y_max)
-                
-                plt.tight_layout()
-                filename_adv = os.path.join("plots", f"PrimaryAdvanced_Overall_{iv}_vs_{dv.replace(' ', '')}.png")
-                plt.savefig(filename_adv, dpi=300)
-                plt.close()
+                    plt.title(f"{dv.replace('_', ' ')} by {iv_config['title_name']}", fontsize=14, fontname='Segoe UI Emoji')
+                    plt.xlabel(iv_config['label'], fontsize=12)
+                    plt.ylabel(dv.replace('_', ' '), fontsize=12)
+                    
+                    plt.yticks(ticks=ticks_1_to_7, labels=DV_Y_LABELS.get(dv, ticks_1_to_7), fontsize=10)
+                    plt.ylim(0.5, y_max)
+                    
+                    plt.tight_layout()
+                    suffix = "" if plot_style == 'offset' else "_inline"
+                    filename_adv = os.path.join("plots", f"PrimaryAdvanced_Overall_{iv}_vs_{dv.replace(' ', '')}{suffix}.png")
+                    plt.savefig(filename_adv, dpi=300)
+                    plt.close()
                 
                 # Save Standalone Legend
                 fig_leg = plt.figure(figsize=(3, 2))
